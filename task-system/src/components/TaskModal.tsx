@@ -86,8 +86,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
             <span className="text-[0.65rem] font-extrabold text-indigo-600 uppercase tracking-widest">
               {project?.name || "Global"}
             </span>
-            <span className="w-1 h-1 rounded-full bg-slate-200"></span>
-            <span className="text-[0.65rem] font-bold text-slate-400">ID: {task.id}</span>
+            <span className="w-1 h-1 rounded-full bg-[var(--border)]"></span>
+            <span className="text-[0.65rem] font-bold text-[var(--text-secondary)]">ID: {task.id}</span>
           </div>
           {isEditing && (
             <Input
@@ -113,7 +113,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             ) : (
               <div className="flex items-center gap-2.5">
                 <Avatar name={user?.name} avatar={user?.avatar} size="sm" />
-                <span className="text-[0.9rem] font-bold text-slate-700">{user?.name || "Unassigned"}</span>
+                <span className="text-[0.9rem] font-bold text-[var(--heading-color)]">{user?.name || "Unassigned"}</span>
               </div>
             )}
           </PropertyItem>
@@ -151,7 +151,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
                 ]}
               />
             ) : (
-              <div className="bg-slate-50 border border-slate-100 !px-[10px] !py-[2px] rounded text-[0.8rem] font-bold text-slate-600 capitalize">
+              <div className="bg-[var(--nav-bg)] border border-[var(--border)] !px-[10px] !py-[2px] rounded text-[0.8rem] font-bold text-[var(--text-secondary)] capitalize">
                 {task.status.replace("-", " ")}
               </div>
             )}
@@ -161,29 +161,29 @@ const TaskModal: React.FC<TaskModalProps> = ({
             {isEditing ? (
               <input
                 type="date"
-                className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-[6px] text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
+                className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg !px-3 !py-[6px] text-[0.85rem] outline-none focus:border-[var(--accent)] transition-all font-medium"
                 value={editedTask.dueDate || ""}
                 onChange={(e) => setEditedTask((prev) => ({ ...prev, dueDate: e.target.value }))}
               />
             ) : (
-              <span className="text-[0.9rem] font-bold text-slate-700">{task.dueDate || "No date set"}</span>
+              <span className="text-[0.9rem] font-bold text-[var(--heading-color)]">{task.dueDate || "No date set"}</span>
             )}
           </PropertyItem>
         </div>
 
         {/* Description */}
-        <div className="flex flex-col gap-2 !pt-4 border-t border-slate-100">
+        <div className="flex flex-col gap-2 !pt-4 border-t border-[var(--border)]">
           <Text variant="tiny">Description</Text>
           {isEditing ? (
             <textarea
-              className="w-full min-h-[80px] bg-slate-50 border border-slate-200 rounded-xl !p-[14px] text-[0.95rem] leading-relaxed outline-none focus:border-indigo-600 transition-all placeholder:text-slate-400"
+              className="w-full min-h-[80px] bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl !p-[14px] text-[0.95rem] leading-relaxed outline-none focus:border-[var(--accent)] transition-all placeholder:text-[var(--text-secondary)]"
               value={editedTask.description}
               placeholder="Description..."
               onChange={(e) => setEditedTask((prev) => ({ ...prev, description: e.target.value }))}
             />
           ) : (
-            <div className="text-[0.95rem] text-slate-600 leading-relaxed whitespace-pre-wrap">
-              {task.description || <span className="italic text-slate-400">No description provided.</span>}
+            <div className="text-[0.95rem] text-[var(--text-primary)] leading-relaxed whitespace-pre-wrap">
+              {task.description || <span className="italic text-[var(--text-secondary)]">No description provided.</span>}
             </div>
           )}
         </div>

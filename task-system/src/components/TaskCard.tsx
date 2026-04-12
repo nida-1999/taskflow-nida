@@ -68,14 +68,14 @@ const TaskCard: React.FC<TaskCardProps> = ({
           <div className="flex justify-between items-start gap-2">
             <h4
               className={`text-[0.9rem] font-bold leading-tight flex-1 ${
-                isDone ? "line-through text-slate-400" : "text-slate-800"
+                isDone ? "line-through text-[var(--text-secondary)]" : "text-[var(--heading-color)]"
               }`}
             >
               {task.title}
             </h4>
             {!isOverlay && onEditClick && (
               <button
-                className="edit-trigger opacity-0 group-hover:opacity-100 border-none bg-transparent p-0.5 cursor-pointer text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-all rounded"
+                className="edit-trigger opacity-0 group-hover:opacity-100 border-none bg-transparent p-0.5 cursor-pointer text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--hover-bg)] transition-all rounded"
                 onClick={(e) => {
                   e.stopPropagation();
                   onEditClick(e);
@@ -94,13 +94,13 @@ const TaskCard: React.FC<TaskCardProps> = ({
                 {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
               </Badge>
               {task.dueDate && (
-                <div className="flex items-center gap-1 flex items-center gap-1 text-slate-400 text-[0.7rem] font-bold">
+                <div className="flex items-center gap-1 flex items-center gap-1 text-[var(--text-secondary)] text-[0.7rem] font-bold">
                   <span>📅</span>
                   <span>{task.dueDate.split("-").slice(1).join("/")}</span>
                 </div>
               )}
               {task.description && (
-                <div className="text-slate-400 text-[0.7rem]">
+                <div className="text-[var(--text-secondary)] text-[0.7rem]">
                   <span>💬</span>
                 </div>
               )}

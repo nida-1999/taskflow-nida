@@ -62,8 +62,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
           open 
             ? "border-indigo-600 ring-4 ring-indigo-600/10" 
             : isActive 
-              ? "border-indigo-600 bg-indigo-50/30 text-indigo-700" 
-              : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+              ? "border-[var(--accent)] bg-[var(--accent-light)] text-[var(--heading-color)]" 
+              : "border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
         }`}
       >
         <span className="truncate">{displayLabel}</span>
@@ -79,7 +79,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-[calc(100%+6px)] left-0 w-full min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl z-50 !p-[6px] animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute top-[calc(100%+6px)] left-0 w-full min-w-[200px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl shadow-xl z-50 !p-[6px] animate-in fade-in zoom-in-95 duration-150">
           <div className="max-h-[280px] overflow-y-auto custom-scrollbar">
             {options.map((opt) => {
               const checked = selected.includes(opt.value);
@@ -89,14 +89,14 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   onClick={() => toggle(opt.value)}
                   className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-semibold flex items-center justify-start gap-2.5 transition-colors mb-0.5 last:mb-0 ${
                     checked 
-                      ? "bg-indigo-50/70 text-indigo-700" 
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "bg-[var(--accent-light)] text-[var(--heading-color)]" 
+                      : "text-[var(--text-primary)] hover:bg-[var(--hover-bg)]"
                   }`}
                 >
                   <div className={`flex-shrink-0 w-[18px] h-[18px] rounded-[5px] border flex items-center justify-center transition-all ${
                     checked 
-                      ? "bg-indigo-600 border-indigo-600 shadow-sm" 
-                      : "bg-white border-slate-300"
+                      ? "bg-[var(--accent)] border-[var(--accent)] shadow-sm" 
+                      : "bg-[var(--bg-secondary)] border-[var(--border)]"
                   }`}>
                     {checked && (
                       <svg className="w-[12px] h-[12px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

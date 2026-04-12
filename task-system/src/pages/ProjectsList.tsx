@@ -209,7 +209,7 @@ const ProjectsList = () => {
                   <div className="progress-bar-track" style={{ height: 4 }}>
                     <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
                   </div>
-                  <div style={{ marginTop: 16, fontSize: "0.7rem", color: "#94a3b8" }}>
+                  <div style={{ marginTop: 16, fontSize: "0.7rem", color: "var(--text-secondary)" }}>
                     Created on {new Date(project.createdAt).toLocaleDateString()}
                   </div>
                 </div>

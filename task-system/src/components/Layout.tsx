@@ -1,8 +1,10 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 const Layout = () => {
   const { user, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,7 +24,7 @@ const Layout = () => {
       <header
         style={{
           height: 64,
-          background: "#ffffff",
+          background: "var(--bg-secondary)",
           borderBottom: "1px solid var(--border)",
           position: "sticky",
           top: 0,
@@ -54,11 +56,11 @@ const Layout = () => {
                 width: 32,
                 height: 32,
                 borderRadius: 8,
-                background: "#0f172a",
+                background: "var(--heading-color)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "white",
+                color: "var(--bg-secondary)",
                 fontSize: "1rem",
               }}
             >
@@ -75,7 +77,7 @@ const Layout = () => {
               display: "flex",
               alignItems: "center",
               gap: 8,
-              background: "#F1F5F9",
+              background: "var(--nav-bg)",
               padding: 4,
               borderRadius: 999,
             }}
@@ -100,21 +102,38 @@ const Layout = () => {
                 alignItems: "center",
                 gap: 6,
                 padding: "6px 10px",
-                background: "#f1f5f9",
+                background: "var(--nav-bg)",
                 borderRadius: 6,
                 fontSize: "0.75rem",
-                color: "#64748b",
+                color: "var(--text-secondary)",
                 fontWeight: 600,
                 cursor: "pointer",
               }}
             >
               <span>Search</span>
-              <span style={{ opacity: 0.5, border: "1px solid #cbd5e1", padding: "1px 4px", borderRadius: 3 }}>
+              <span style={{ opacity: 0.5, border: "1px solid var(--border)", padding: "1px 4px", borderRadius: 3 }}>
                 ⌘ K
               </span>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "1.2rem",
+                  padding: "4px",
+                  color: "var(--text-secondary)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              >
+                {theme === "dark" ? "☀️" : "🌙"}
+              </button>
               <div
                 style={{
                   width: 36,

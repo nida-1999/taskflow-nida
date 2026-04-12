@@ -34,10 +34,10 @@ import TaskModal from "../components/TaskModal";
 import CreateTaskForm from "../components/CreateTaskForm";
 
 const FilterPill: React.FC<{ label: string; value: string; onRemove: () => void }> = ({ label, value, onRemove }) => (
-  <div className="flex items-center gap-1.5 bg-indigo-50 text-indigo-700 !px-[10px] !py-1 rounded-lg border border-indigo-100 animate-in zoom-in-95 duration-200">
+  <div className="flex items-center gap-1.5 bg-[var(--accent-light)] text-[var(--accent)] !px-[10px] !py-1 rounded-lg border border-[var(--accent)] animate-in zoom-in-95 duration-200">
     <span className="text-[0.65rem] font-bold uppercase opacity-60 tracking-tight">{label}:</span>
-    <span className="text-[0.75rem] font-bold">{value}</span>
-    <button onClick={onRemove} className="ml-1 hover:text-indigo-900 transition-colors">✕</button>
+    <span className="text-[0.75rem] font-bold text-[var(--heading-color)]">{value}</span>
+    <button onClick={onRemove} className="ml-1 hover:text-[var(--text-primary)] transition-colors">✕</button>
   </div>
 );
 
@@ -210,26 +210,26 @@ const TasksPage: React.FC = () => {
             Create Task
           </Button>
           {!isMobile && (
-            <div className="flex bg-slate-100 !p-1 rounded-xl">
-              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "kanban" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`} onClick={() => setViewMode("kanban")}>Kanban</button>
-              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "list" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`} onClick={() => setViewMode("list")}>List</button>
+            <div className="flex bg-[var(--nav-bg)] !p-1 rounded-xl border border-[var(--border)]">
+              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "kanban" ? "bg-[var(--bg-secondary)] text-[var(--accent)] shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`} onClick={() => setViewMode("kanban")}>Kanban</button>
+              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "list" ? "bg-[var(--bg-secondary)] text-[var(--accent)] shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`} onClick={() => setViewMode("list")}>List</button>
             </div>
           )}
         </div>
       </div>
 
-      <div className={`bg-slate-50 border border-slate-100 rounded-2xl !p-4 flex ${isMobile ? "flex-col" : "items-end flex-wrap"} gap-4`}>
+      <div className={`bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl !p-4 flex ${isMobile ? "flex-col" : "items-end flex-wrap"} gap-4`}>
         <div className={`flex flex-col gap-1 ${isMobile ? "w-full" : "flex-1 min-w-[220px]"}`}>
           <Text variant="tiny">Search</Text>
           <div className="relative group">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors">🔍</span>
-            <input className="w-full h-9 !pl-8 !pr-3 rounded-lg border border-slate-200 text-[0.85rem] outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-600/10 transition-all" placeholder="Search tasks..." value={filters.search} onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))} />
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-[var(--accent)] transition-colors">🔍</span>
+            <input className="w-full h-9 !pl-8 !pr-3 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[0.85rem] outline-none focus:border-[var(--accent)] focus:ring-4 focus:ring-indigo-600/10 transition-all placeholder:text-[var(--text-secondary)]" placeholder="Search tasks..." value={filters.search} onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))} />
           </div>
         </div>
-        {!isMobile && <div className="w-px h-10 bg-slate-200 self-end mb-0.5" />}
+        {!isMobile && <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />}
         <MultiSelect label="Status" placeholder="Filter status" options={[{ value: "todo", label: "To Do" }, { value: "in-progress", label: "In Progress" }, { value: "review", label: "Review" }, { value: "done", label: "Done" }]} selected={filters.statuses} onChange={(vals) => setFilters(f => ({ ...f, statuses: vals }))} />
         <MultiSelect label="Assignee" placeholder="Filter assignee" options={users.map(u => ({ value: u.id, label: u.name }))} selected={filters.assignees} onChange={(vals) => setFilters(f => ({ ...f, assignees: vals }))} />
-        {!isMobile && <div className="w-px h-10 bg-slate-200 self-end mb-0.5" />}
+        {!isMobile && <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />}
         <SingleSelect
           label="Sort by"
           value={sortBy}
@@ -265,30 +265,30 @@ const TasksPage: React.FC = () => {
           </DragOverlay>
         </DndContext>
       ) : (
-        <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden overflow-x-auto">
+        <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl overflow-hidden overflow-x-auto">
           <table className="w-full border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-slate-50 border-b border-slate-100">
-                {["Task", "Project", "Assignee", "Status", "Priority", "Due Date", "Actions"].map(h => <th key={h} className="text-left !px-6 !py-4 text-[0.7rem] font-bold text-slate-400 uppercase tracking-wider">{h}</th>)}
+              <tr className="bg-[var(--nav-bg)] border-b border-[var(--border)]">
+                {["Task", "Project", "Assignee", "Status", "Priority", "Due Date", "Actions"].map(h => <th key={h} className="text-left !px-6 !py-4 text-[0.7rem] font-bold text-[var(--text-secondary)] uppercase tracking-wider">{h}</th>)}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-[var(--border)]">
               {filteredTasks.length > 0 ? filteredTasks.map(task => (
-                <tr key={task.id} className="hover:bg-slate-50 transition-colors cursor-pointer group" onClick={() => setSelectedTaskState({ task, mode: "view" })}>
-                  <td className="!px-6 !py-4"><Text className="font-bold text-slate-900">{task.title}</Text></td>
+                <tr key={task.id} className="hover:bg-[var(--hover-bg)] transition-colors cursor-pointer group" onClick={() => setSelectedTaskState({ task, mode: "view" })}>
+                  <td className="!px-6 !py-4"><Text className="font-bold text-[var(--heading-color)]">{task.title}</Text></td>
                   <td className="!px-6 !py-4"><Badge variant="neutral">{projects.find(p => p.id === task.projectId)?.name || "Global"}</Badge></td>
-                  <td className="!px-6 !py-4"><div className="flex items-center gap-2"><Avatar name={users.find(u => u.id === task.assigneeId)?.name || "?"} size="sm" /><Text variant="tiny" className="font-semibold">{users.find(u => u.id === task.assigneeId)?.name}</Text></div></td>
+                  <td className="!px-6 !py-4"><div className="flex items-center gap-2"><Avatar name={users.find(u => u.id === task.assigneeId)?.name || "?"} size="sm" /><Text variant="tiny" className="font-semibold text-[var(--text-primary)]">{users.find(u => u.id === task.assigneeId)?.name}</Text></div></td>
                   <td className="!px-6 !py-4"><Badge variant="neutral" className="capitalize">{task.status.replace("-", " ")}</Badge></td>
                   <td className="!px-6 !py-4"><Badge variant={task.priority as any}>{task.priority}</Badge></td>
-                  <td className="!px-6 !py-4"><Text variant="tiny" className="font-medium text-slate-500">{task.dueDate || "-"}</Text></td>
+                  <td className="!px-6 !py-4"><Text variant="tiny" className="font-medium text-[var(--text-secondary)]">{task.dueDate || "-"}</Text></td>
                   <td className="!px-6 py-4 text-center">
-                    <button className="!p-2 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-slate-100 transition-all opacity-0 group-hover:opacity-100" onClick={e => { e.stopPropagation(); setSelectedTaskState({ task, mode: "edit" }); }}>
+                    <button className="!p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-primary)] transition-all opacity-0 group-hover:opacity-100" onClick={e => { e.stopPropagation(); setSelectedTaskState({ task, mode: "edit" }); }}>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                     </button>
                   </td>
                 </tr>
               )) : (
-                <tr><td colSpan={7} className="!px-6 !py-20 text-center"><Text className="font-bold text-slate-400">No tasks found matching your filters.</Text><button onClick={() => setFilters({ statuses: [], assignees: [], search: "" })} className="text-indigo-600 font-bold hover:underline">Reset all filters</button></td></tr>
+                <tr><td colSpan={7} className="!px-6 !py-20 text-center"><Text className="font-bold text-[var(--text-secondary)]">No tasks found matching your filters.</Text><button onClick={() => setFilters({ statuses: [], assignees: [], search: "" })} className="text-[var(--accent)] font-bold hover:underline">Reset all filters</button></td></tr>
               )}
             </tbody>
           </table>

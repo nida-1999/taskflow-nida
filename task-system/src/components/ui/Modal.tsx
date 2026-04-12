@@ -43,20 +43,20 @@ const Modal: React.FC<ModalProps> = ({
       
       {/* Container */}
       <div
-        className={`relative w-full ${maxWidth} bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 scale-100 ${className}`}
+        className={`relative w-full ${maxWidth} bg-[var(--bg-secondary)] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 scale-100 ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between !px-6 !py-4 border-b border-slate-100">
+          <div className="flex items-center justify-between !px-6 !py-4 border-b border-[var(--border)]">
             {title && (
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+              <h2 className="text-lg font-bold text-[var(--heading-color)] tracking-tight">
                 {title}
               </h2>
             )}
             <button
               onClick={onClose}
-              className="!p-[10px] rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors border border-slate-200"
+              className="!p-[10px] rounded-full hover:bg-[var(--hover-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border)]"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -72,7 +72,7 @@ const Modal: React.FC<ModalProps> = ({
 
         
         {footer && (
-          <div className="!px-6 !py-4 bg-slate-50 border-t border-slate-100 flex gap-3">
+          <div className="!px-6 !py-4 bg-[var(--nav-bg)] border-t border-[var(--border)] flex gap-3">
             {footer}
           </div>
         )}

@@ -191,7 +191,7 @@
       "projectId": "1",
       "title": "Create wireframes",
       "description": "Design wireframes for the homepage and landing pages",
-      "status": "in-progress",
+      "status": "todo",
       "priority": "high",
       "assigneeId": "2",
       "createdAt": "2026-04-02",
@@ -202,7 +202,7 @@
       "projectId": "1",
       "title": "Setup design system",
       "description": "Define colors, typography, and cosasasamponent librarys",
-      "status": "in-progress",
+      "status": "todo",
       "priority": "medium",
       "assigneeId": "1",
       "createdAt": "2026-04-03",
@@ -213,7 +213,7 @@
       "projectId": "1",
       "title": "Implement responsive nav",
       "description": "Build the responsive navigation component Build the responsive navigation component Build the responsive navigation componentBuild the responsive navigation componentBuild the responsive navigation componentBuild the responsive navigation componentBuild the responsive navigation componentBuild the responsive navigation componentBuild the responsive navigation componentBuild the responsive navigation component",
-      "status": "todo",
+      "status": "review",
       "priority": "medium",
       "assigneeId": "3",
       "createdAt": "2026-04-04",
@@ -255,7 +255,7 @@
     {
       "title": "Test Central Task",
       "description": "This is a test task.",
-      "status": "review",
+      "status": "in-progress",
       "priority": "high",
       "projectId": "1",
       "assigneeId": "1",
@@ -306,6 +306,17 @@
       "dueDate": "2026-04-15",
       "createdAt": "2026-04-11T21:04:35.212Z",
       "id": "tQtL-smnO4g"
+    },
+    {
+      "title": "jhg",
+      "description": "",
+      "status": "todo",
+      "priority": "medium",
+      "projectId": "1",
+      "assigneeId": "1",
+      "dueDate": "2026-04-12",
+      "createdAt": "2026-04-12T09:05:38.967Z",
+      "id": "zAE9gogq50s"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

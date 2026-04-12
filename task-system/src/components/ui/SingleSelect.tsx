@@ -57,8 +57,8 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
           open 
             ? "border-indigo-600 ring-4 ring-indigo-600/10" 
             : isActive 
-              ? "border-slate-200 bg-white text-slate-800 font-semibold" 
-              : "border-slate-200 bg-white text-slate-500 hover:border-slate-300"
+              ? "border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--heading-color)] font-semibold" 
+              : "border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:border-[var(--border-hover)]"
         }`}
       >
         <span className="truncate">{displayLabel}</span>
@@ -74,7 +74,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-[calc(100%+6px)] left-0 w-full min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-[6px] animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute top-[calc(100%+6px)] left-0 w-full min-w-[200px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-[6px] animate-in fade-in zoom-in-95 duration-150">
           <div className="max-h-[280px] overflow-y-auto custom-scrollbar">
             {options.map((opt) => {
               const selected = value === opt.value;
@@ -85,17 +85,17 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
                   onClick={() => handleSelect(opt.value)}
                   className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-medium flex items-center justify-start gap-2.5 transition-colors mb-0.5 last:mb-0 ${
                     selected 
-                      ? "bg-indigo-50/70 text-indigo-700 font-semibold" 
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "bg-[var(--accent-light)] text-[var(--accent)] font-semibold" 
+                      : "text-[var(--text-primary)] hover:bg-[var(--hover-bg)]"
                   }`}
                 >
                   <div className={`flex-shrink-0 w-[16px] h-[16px] rounded-full border flex items-center justify-center transition-all ${
                     selected 
-                      ? "bg-indigo-600 border-indigo-600 shadow-sm" 
-                      : "bg-white border-slate-300"
+                      ? "bg-[var(--accent)] border-[var(--accent)] shadow-sm" 
+                      : "bg-[var(--bg-secondary)] border-[var(--border)]"
                   }`}>
                     {selected && (
-                      <div className="w-[6px] h-[6px] rounded-full bg-white" />
+                      <div className="w-[6px] h-[6px] rounded-full bg-[var(--bg-secondary)]" />
                     )}
                   </div>
                   <span className="truncate !pt-[1px]">{opt.label}</span>

@@ -81,11 +81,11 @@ const LoginScreen = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 !p-6">
+    <div className="min-h-screen flex items-center justify-center !p-6 bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <Card className="w-full max-w-[420px] !p-10 animate-fade-in shadow-xl">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center text-xl text-white">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style={{ background: "var(--heading-color)", color: "var(--bg-secondary)" }}>
             ⚡
           </div>
         </div>

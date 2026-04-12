@@ -63,15 +63,15 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
   );
 
   return (
-    <div className="flex flex-col bg-white w-full h-full">
+    <div className="flex flex-col bg-[var(--bg-secondary)] w-full h-full text-[var(--text-primary)]">
       {/* Header */}
-      <div className={`flex items-center justify-between border-b border-slate-100 ${isMobile ? "!p-4" : "!px-[24px] !py-2"}`}>
+      <div className={`flex items-center justify-between border-b border-[var(--border)] ${isMobile ? "!p-4" : "!px-[24px] !py-2"}`}>
         <Heading variant={isMobile ? "h3" : "h2"} className="">
           Create a Task
         </Heading>
         <button
           onClick={onClose}
-          className="!p-[6px] rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors border border-slate-200"
+          className="!p-[6px] rounded-full hover:bg-[var(--hover-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors border border-[var(--border)]"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
@@ -139,17 +139,17 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
           <PropertyItem label="Due Date">
             <input
               type="date"
-              className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-2 text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
+              className="w-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-primary)] rounded-lg !px-3 !py-2 text-[0.85rem] outline-none focus:border-[var(--accent)] transition-all font-medium"
               value={task.dueDate}
               onChange={(e) => setTask((prev) => ({ ...prev, dueDate: e.target.value }))}
             />
           </PropertyItem>
         </div>
 
-        <div className="flex flex-col gap-2 !pt-5 border-t border-slate-100">
+        <div className="flex flex-col gap-2 !pt-5 border-t border-[var(--border)]">
           <Text variant="tiny">Description</Text>
           <textarea
-            className="w-full min-h-[50px] bg-slate-50 border border-slate-200 rounded-xl !p-[14px] text-[0.9rem] leading-relaxed outline-none focus:border-indigo-600 transition-all placeholder:text-slate-400"
+            className="w-full min-h-[50px] bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-primary)] rounded-xl !p-[14px] text-[0.9rem] leading-relaxed outline-none focus:border-[var(--accent)] transition-all placeholder:text-[var(--text-secondary)]"
             value={task.description}
             placeholder="More details about this task..."
             onChange={(e) => setTask((prev) => ({ ...prev, description: e.target.value }))}
@@ -158,7 +158,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
       </div>
 
       {/* Footer */}
-      <div className={`border-t border-slate-100 flex gap-3 sticky bottom-0 bg-white z-1 bg-slate-50/50 ${isMobile ? "!p-4" : "!px-[28px] !pt-4"}`}>
+      <div className={`border-t border-[var(--border)] flex gap-3 sticky bottom-0 bg-[var(--bg-secondary)] z-1 ${isMobile ? "!p-4" : "!px-[28px] !pt-4"}`}>
         <Button
           className="flex-[1.5]"
           onClick={handleSave}

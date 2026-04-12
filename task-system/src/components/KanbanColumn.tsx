@@ -42,18 +42,18 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
     <div
       ref={setNodeRef}
       className={`rounded-[20px] !p-4 w-full min-w-[280px] flex flex-col gap-4 min-h-[600px] border transition-all duration-200 h-fit ${
-        isOver ? "bg-blue-50/50 border-blue-400" : "bg-slate-100/50 border-slate-200"
+        isOver ? "bg-[var(--accent-light)] border-[var(--accent)]" : "bg-[var(--nav-bg)] border-[var(--border)]"
       }`}
     >
       <div className="flex items-center justify-between p-1">
         <div className="flex items-center gap-2.5">
           <span className={`w-2.5 h-2.5 rounded-full ${dotColors[id]}`}></span>
           <span className={`text-[0.9rem] font-extrabold tracking-tight ${
-            isOver ? "text-blue-600" : "text-slate-900"
+            isOver ? "text-[var(--accent)]" : "text-[var(--heading-color)]"
           }`}>
             {title}
           </span>
-          <span className="text-[0.7rem] font-bold bg-white text-slate-500 !px-2 !py-[4px] rounded-full border border-slate-200">
+          <span className="text-[0.7rem] font-bold bg-[var(--bg-secondary)] text-[var(--text-secondary)] !px-2 !py-[4px] rounded-full border border-[var(--border)]">
             {tasks.length}
           </span>
         </div>

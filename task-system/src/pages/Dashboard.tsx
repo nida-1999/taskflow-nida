@@ -128,7 +128,7 @@ const Dashboard = () => {
                       {task.title}
                     </span>
                   </div>
-                  <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--text-secondary)", background: "#f1f5f9", padding: "2px 6px", borderRadius: 4 }}>
+                  <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--text-secondary)", background: "var(--nav-bg)", padding: "2px 6px", borderRadius: 4 }}>
                     {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ""}
                   </span>
                 </div>
@@ -140,7 +140,7 @@ const Dashboard = () => {
           <button 
             className="btn-outline" 
             style={{ width: "100%", marginTop: 24, padding: "8px" }}
-            onClick={() => navigate("/projects")}
+            onClick={() => navigate("/tasks")}
           >
             View all tasks
           </button>
