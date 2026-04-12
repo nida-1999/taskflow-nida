@@ -6,20 +6,6 @@
       "email": "alice@gmail.com",
       "password": "pass123@",
       "avatar": "A"
-    },
-    {
-      "name": "Test User",
-      "email": "test@example.com",
-      "password": "Password123!",
-      "avatar": "T",
-      "id": "WlxH34zxO9Y"
-    },
-    {
-      "name": "Alice",
-      "email": "alice@taskflow.io",
-      "password": "123456!",
-      "avatar": "A",
-      "id": "wcxcCg1G6OQ"
     }
   ],
   "projects": [
@@ -31,14 +17,14 @@
       "id": "QRoKf67HiyM"
     },
     {
-      "name": "sasamdowjdoiwjd",
+      "name": "Learn AWS",
       "description": "dmwklj",
       "createdBy": "VQTcyg5zrqs",
       "createdAt": "2026-04-12",
       "id": "cSefT8WNSGU"
     },
     {
-      "name": "mdkdkj",
+      "name": "Learn GoLang",
       "description": "mflkw3",
       "createdBy": "VQTcyg5zrqs",
       "createdAt": "2026-04-12",
