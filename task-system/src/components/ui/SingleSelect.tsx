@@ -106,7 +106,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
       {open && (
         <div className="absolute top-[calc(100%+6px)] left-0 w-full min-w-[220px] bg-[var(--bg-secondary)] border border-[var(--border)] rounded-xl shadow-xl z-50 p-[6px] animate-in fade-in zoom-in-95 duration-150">
           {isCreatable && (
-            <div className="!px-2 !pb-2 !pt-1 border-b border-[var(--border)] mb-1">
+            <div className="!px-2 !pb-2 !pt-1 border-b border-[var(--border)] !mb-1">
               <div className="relative">
                 <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[0.75rem] opacity-50">🔍</span>
                 <input
@@ -133,7 +133,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
                     key={opt.value}
                     type="button"
                     onClick={() => handleSelect(opt.value)}
-                    className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-medium flex items-center justify-start gap-2.5 transition-colors mb-0.5 last:mb-0 ${
+                    className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-medium flex items-center justify-start gap-2.5 transition-colors !mb-0.5 last:mb-0 ${
                       selected 
                         ? "bg-[var(--accent-light)] text-[var(--accent)] font-semibold" 
                         : "text-[var(--text-primary)] hover:bg-[var(--hover-bg)]"

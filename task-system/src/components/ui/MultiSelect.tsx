@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Text } from "./Typography";
-import { useMobile } from "../../hooks/useMobile";
 
 interface Option {
   value: string;
@@ -26,7 +25,6 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const isMobile = useMobile()
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -89,7 +87,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 <button
                   key={opt.value}
                   onClick={() => toggle(opt.value)}
-                  className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-semibold flex items-center justify-start gap-2.5 transition-colors mb-0.5 last:mb-0 ${
+                  className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-semibold flex items-center justify-start gap-2.5 transition-colors !mb-0.5 last:mb-0 ${
                     checked 
                       ? "bg-[var(--accent-light)] text-[var(--heading-color)]" 
                       : "text-[var(--text-primary)] hover:bg-[var(--hover-bg)]"

@@ -53,7 +53,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
           : `w-full !p-0 min-h-[50px] ${isOver ? "bg-[var(--accent-light)]/50 rounded-lg" : ""}`
       }`}
     >
-      <div className={`flex items-center justify-between ${variant === ViewMode.LIST ? "!p-2 !pt-6 !pb-2 mb-1 border-b-2 border-[var(--border)]/50" : "p-1"}`}>
+      <div className={`flex items-center justify-between ${variant === ViewMode.LIST ? "!p-2 !pt-6 !pb-2 !mb-1 border-b-2 border-[var(--border)]/50" : "p-1"}`}>
         <div className="flex items-center gap-2.5">
           <span className={`w-2.5 h-2.5 rounded-full ${dotColors[id]} opacity-70`}></span>
           <span className={`text-[0.75rem] font-black uppercase tracking-widest ${

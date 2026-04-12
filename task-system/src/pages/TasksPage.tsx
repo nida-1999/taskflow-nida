@@ -36,7 +36,7 @@ const FilterPill: React.FC<{ label: string; value: string; onRemove: () => void 
   <div className="flex items-center gap-1.5 bg-[var(--accent-light)] text-[var(--accent)] !px-[10px] !py-1 rounded-lg border border-[var(--accent)] animate-in zoom-in-95 duration-200">
     <span className="text-[0.65rem] font-bold uppercase opacity-60 tracking-tight">{label}:</span>
     <span className="text-[0.75rem] font-bold text-[var(--heading-color)]">{value}</span>
-    <button onClick={onRemove} className="ml-1 hover:text-[var(--text-primary)] transition-colors">✕</button>
+    <button onClick={onRemove} className="!ml-1 hover:text-[var(--text-primary)] transition-colors">✕</button>
   </div>
 );
 
@@ -46,7 +46,7 @@ const EmptyState: React.FC<{
   onCreate?: () => void;
 }> = ({ isFilter, onClear, onCreate }) => (
   <div className="flex flex-col items-center justify-center !p-12 !py-20 rounded-3xl bg-[var(--bg-secondary)] border border-dashed border-[var(--border)] text-center animate-in fade-in zoom-in-95 duration-500">
-    <div className="text-6xl mb-6 grayscale opacity-60">
+    <div className="text-6xl !mb-6 grayscale opacity-60">
       {isFilter ? "🔍" : "✨"}
     </div>
     <Heading variant="h2" className="!mb-2">
@@ -236,8 +236,8 @@ const TasksPage: React.FC = () => {
 
   if (projectId && !project) return (
     <div className="text-center !pt-20">
-      <div className="text-5xl mb-4">😕</div>
-      <Heading variant="h2" className="mb-4">Project Not Found</Heading>
+      <div className="text-5xl !mb-4">😕</div>
+      <Heading variant="h2" className="!mb-4">Project Not Found</Heading>
       <Button onClick={() => navigate("/projects")}>Back to Projects</Button>
     </div>
   );
@@ -247,7 +247,7 @@ const TasksPage: React.FC = () => {
       <div className={` ${isMobile ? "" : "flex justify-between"} items-center gap-4`}>
         <div>
           {projectId && (
-            <button onClick={() => navigate("/projects")} className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 transition-colors mb-2 text-sm font-bold">
+            <button onClick={() => navigate("/projects")} className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 transition-colors !mb-2 text-sm font-bold cursor-pointer">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" /></svg>
               Back to Projects
             </button>
@@ -308,7 +308,7 @@ const TasksPage: React.FC = () => {
                   <input className="w-full h-9 !pl-8 !pr-3 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[0.85rem] outline-none focus:border-[var(--accent)] focus:ring-4 focus:ring-indigo-600/10 transition-all placeholder:text-[var(--text-secondary)]" placeholder="Search tasks..." value={filters.search} onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))} />
                 </div>
               </div>
-              <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />
+              <div className="w-px h-10 bg-[var(--border)] self-end !mb-0.5" />
               <MultiSelect label="Status" placeholder="Filter status" options={[{ value: "todo", label: "To Do" }, { value: "in-progress", label: "In Progress" }, { value: "review", label: "Review" }, { value: "done", label: "Done" }]} selected={filters.statuses} onChange={(vals) => setFilters(f => ({ ...f, statuses: vals }))} />
               <MultiSelect label="Assignee" placeholder="Filter assignee" options={users.map(u => ({ value: u.id, label: u.name }))} selected={filters.assignees} onChange={(vals) => setFilters(f => ({ ...f, assignees: vals }))} />
               <MultiSelect 
@@ -318,7 +318,7 @@ const TasksPage: React.FC = () => {
                 selected={filters.projects} 
                 onChange={(vals) => setFilters(f => ({ ...f, projects: vals }))} 
               />
-              <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />
+              <div className="w-px h-10 bg-[var(--border)] self-end !mb-0.5" />
               <SingleSelect
                 label="Sort by"
                 value={sortBy}

@@ -1,6 +1,9 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import * as jose from "jose";
 import type { AuthContextType, User } from "../types";
 import api from "../api";
+
+const JWT_SECRET = import.meta.env.VITE_JWT_SECRET || import.meta.env.example.VITE_JWT_SECRET
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -37,7 +40,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error("Incorrect password. Please try again.");
     }
 
-    const generatedToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const generatedToken = await new jose.SignJWT({ id: matched.id, email: matched.email })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("1d")
+      .sign(secret);
+
     localStorage.setItem("token", generatedToken);
     localStorage.setItem("user", JSON.stringify(matched));
     setToken(generatedToken);
@@ -64,7 +73,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await api.post<User>("/users", { name, email, password, avatar });
     const newUser = res.data;
 
-    const generatedToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const generatedToken = await new jose.SignJWT({ id: newUser.id, email: newUser.email })
+      .setProtectedHeader({ alg: "HS256" })
+      .setIssuedAt()
+      .setExpirationTime("1d")
+      .sign(secret);
+
     localStorage.setItem("token", generatedToken);
     localStorage.setItem("user", JSON.stringify(newUser));
     setToken(generatedToken);

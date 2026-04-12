@@ -84,7 +84,7 @@ const LoginScreen = () => {
     <div className="min-h-screen flex items-center justify-center !p-6 bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <Card className="w-full max-w-[420px] !p-10 animate-fade-in shadow-xl">
         {/* Logo */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center !mb-8">
           <div className="w-12 h-12 rounded-xl flex items-center justify-center text-xl" style={{ background: "var(--heading-color)", color: "var(--bg-secondary)" }}>
             ⚡
           </div>
@@ -102,7 +102,7 @@ const LoginScreen = () => {
         {error && (
           <div
             role="alert"
-            className="!py-3 !px-[14px] rounded-lg bg-red-50 border border-red-100 text-red-500 text-[0.85rem] mb-6 font-medium animate-in fade-in slide-in-from-top-1"
+            className="!py-3 !px-[14px] rounded-lg bg-red-50 border border-red-100 text-red-500 text-[0.85rem] !mb-6 font-medium animate-in fade-in slide-in-from-top-1"
           >
             {error}
           </div>
@@ -157,7 +157,7 @@ const LoginScreen = () => {
 
           <Button
             type="submit"
-            className="mt-2 w-full"
+            className="!mt-2 w-full cursor-pointer"
             isLoading={isLoading}
           >
             {isRegister ? "Create Account" : "Sign In"}
@@ -170,7 +170,7 @@ const LoginScreen = () => {
               type="button"
               onClick={toggleMode}
             >
-              <p className="!mx-1">{isRegister ? "Sign In" : "Create Account"} </p>
+              <p className="!mx-1 cursor-pointer">{isRegister ? "Sign In" : "Create Account"} </p>
             </Button>
           </p>
         </form>

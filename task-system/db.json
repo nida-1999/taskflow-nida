@@ -153,6 +153,41 @@
       "password": "123!234",
       "avatar": "A",
       "id": "c_uI4vNbL8o"
+    },
+    {
+      "name": "Alice",
+      "email": "alice7@taskflow.io",
+      "password": "jkilo((",
+      "avatar": "A",
+      "id": "xUlLW1TDGYg"
+    },
+    {
+      "name": "Refactored User",
+      "email": "poiuytr9@j.com",
+      "password": "lkjhg79)",
+      "avatar": "R",
+      "id": "oYS1Dzy2rjA"
+    },
+    {
+      "name": "a. aa",
+      "email": "poiuytraa@j.com",
+      "password": "12345@@",
+      "avatar": "A",
+      "id": "jMNPrY1hQTk"
+    },
+    {
+      "name": "sa",
+      "email": "refactor22@test.com",
+      "password": "asdqw@@@",
+      "avatar": "S",
+      "id": "P-dbT6KpDPY"
+    },
+    {
+      "name": "Nida Tarannum",
+      "email": "alicess@taskflow.io",
+      "password": "asd231@",
+      "avatar": "N",
+      "id": "zP6kqf6pzSA"
     }
   ],
   "projects": [
@@ -169,6 +204,13 @@
       "createdBy": "c_uI4vNbL8o",
       "createdAt": "2026-04-12",
       "id": "k6i5w35fMWY"
+    },
+    {
+      "name": ",jhg",
+      "description": "fghm",
+      "createdBy": "oYS1Dzy2rjA",
+      "createdAt": "2026-04-12",
+      "id": "hhMvzAXaw-s"
     }
   ],
   "tasks": [
@@ -204,6 +246,39 @@
       "dueDate": "2026-04-16",
       "createdAt": "2026-04-12T13:37:19.449Z",
       "id": "SLmZd3eLv_E"
+    },
+    {
+      "title": "mhgfd",
+      "description": "lkjh",
+      "status": "done",
+      "priority": "medium",
+      "projectId": "-1Pd9zc2gRo",
+      "assigneeId": "2",
+      "dueDate": "2026-04-23",
+      "createdAt": "2026-04-12T14:17:07.653Z",
+      "id": "-3q6GpkWUbU"
+    },
+    {
+      "title": "jhgf",
+      "description": "ertyu",
+      "status": "todo",
+      "priority": "high",
+      "projectId": "hhMvzAXaw-s",
+      "assigneeId": "2",
+      "dueDate": "2026-04-24",
+      "createdAt": "2026-04-12T14:17:45.500Z",
+      "id": "wO6apLnqti4"
+    },
+    {
+      "title": "kjhg",
+      "description": "m",
+      "status": "todo",
+      "priority": "medium",
+      "projectId": "-1Pd9zc2gRo",
+      "assigneeId": "jMNPrY1hQTk",
+      "dueDate": "",
+      "createdAt": "2026-04-12T14:18:21.252Z",
+      "id": "yKCXHPX9xp0"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

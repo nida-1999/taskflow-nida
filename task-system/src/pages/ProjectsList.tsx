@@ -95,7 +95,7 @@ const ProjectsList = () => {
       {/* Header */}
       <div className="flex items-center justify-between !mb-10">
         <div>
-          <h1 className ="text-[1.75rem] font-bold mb-1" >Projects</h1>
+          <h1 className ="text-[1.75rem] font-bold !mb-1" >Projects</h1>
           <p className="text-[0.9rem] text-secondary">Manage your initiatives and team goals.</p>
         </div>
         <button

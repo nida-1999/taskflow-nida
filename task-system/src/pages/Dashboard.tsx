@@ -194,7 +194,7 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center !p-12 !py-24 rounded-3xl bg-[var(--bg-secondary)] border border-dashed border-[var(--border)] text-center animate-in fade-in zoom-in-95 duration-500">
-          <div className="text-7xl mb-6 scale-animation grayscale opacity-50">
+          <div className="text-7xl !mb-6 scale-animation grayscale opacity-50">
             🚀
           </div>
           <Heading variant="h1" className="!mb-4">
