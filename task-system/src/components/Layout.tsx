@@ -145,6 +145,7 @@ const Layout = () => {
 
       {/* Main Content Area */}
       <main
+        className="animate-fade-in"
         style={{
           flex: 1,
           padding: "40px 24px",

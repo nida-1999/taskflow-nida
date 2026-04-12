@@ -3,7 +3,7 @@ import TasksPage from "./TasksPage";
 
 const ProjectDetail = () => {
   const { id } = useParams<{ id: string }>();
-  return <TasksPage projectId={id} />;
+  return <TasksPage />;
 };
 
 export default ProjectDetail;

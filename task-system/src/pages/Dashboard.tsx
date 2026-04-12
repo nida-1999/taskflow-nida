@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProjects, getAllTasks } from "../services";
 import type { Project, Task } from "../types";
-import Card from "../components/input/Card";
-import Heading from "../components/input/Heading";
-import Button from "../components/input/Button";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -61,9 +58,9 @@ const Dashboard = () => {
     <div className="animate-fade-in">
       {/* Header */}
       <header style={{ marginBottom: 40 }}>
-        <Heading level={1}>
+        <h1 style={{ fontSize: "1.75rem", fontWeight: 700, marginBottom: 4 }}>
           Good morning, {user?.name}.
-        </Heading>
+        </h1>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem" }}>
           You have {tasks.filter(t => t.status !== "done").length} total open tasks today.
         </p>
@@ -72,12 +69,12 @@ const Dashboard = () => {
       {/* Bento Grid */}
       <div className="bento-grid">
         {/* Today's Focus */}
-        <Card className="bento-focus" style={{ padding: 32, display: "flex", flexDirection: "column" }}>
+        <div className="card bento-focus" style={{ padding: 32, display: "flex", flexDirection: "column" }}>
           <div style={{ marginBottom: 24 }}>
             <span className="column-label" style={{ fontSize: "0.7rem" }}>Today's Focus</span>
-            <Heading level={2} style={{ marginTop: 8 }}>
+            <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginTop: 8 }}>
               {focusProject ? focusProject.name : "No active project"}
-            </Heading>
+            </h2>
           </div>
 
           <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
@@ -116,10 +113,10 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-        </Card>
+        </div>
 
         {/* Upcoming Tasks */}
-        <Card style={{ padding: 24 }}>
+        <div className="card" style={{ padding: 24 }}>
           <span className="column-label" style={{ fontSize: "0.7rem", marginBottom: 16, display: "block" }}>Upcoming</span>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {upcomingTasks.length > 0 ? (
@@ -140,29 +137,29 @@ const Dashboard = () => {
               <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem" }}>No upcoming deadlines.</p>
             )}
           </div>
-          <Button 
-            variant="outline" 
-            style={{ width: "100%", marginTop: 24 }}
+          <button 
+            className="btn-outline" 
+            style={{ width: "100%", marginTop: 24, padding: "8px" }}
             onClick={() => navigate("/projects")}
           >
             View all tasks
-          </Button>
-        </Card>
+          </button>
+        </div>
 
         {/* Stats Placeholder or Mini Card */}
-        <Card style={{ padding: 24, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+        <div className="card" style={{ padding: 24, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
           <div style={{ fontSize: "2rem", marginBottom: 8 }}>📈</div>
           <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{Math.round((tasks.filter(t => t.status === "done").length / (tasks.length || 1)) * 100)}%</div>
           <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: 500 }}>Overall Completion</div>
-        </Card>
+        </div>
 
         {/* Recent Projects (Wide Row at bottom) */}
-        <Card style={{ gridColumn: "span 3", padding: 24 }}>
+        <div className="card" style={{ gridColumn: "span 3", padding: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <span className="column-label" style={{ fontSize: "0.7rem" }}>Recent Projects</span>
-            <Button variant="outline" onClick={() => navigate("/projects")} style={{ padding: "4px 12px", borderRadius: 8 }}>
+            <button className="btn-outline" onClick={() => navigate("/projects")} style={{ padding: "4px 12px", fontSize: "0.75rem" }}>
               View All
-            </Button>
+            </button>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
             {recentProjects.map(project => {
@@ -175,7 +172,7 @@ const Dashboard = () => {
                   style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 16, cursor: "pointer" }}
                   onClick={() => navigate(`/projects/${project.id}`)}
                 >
-                  <Heading level={3} style={{ marginBottom: 12 }}>{project.name}</Heading>
+                  <h3 style={{ fontSize: "0.95rem", fontWeight: 600, marginBottom: 12 }}>{project.name}</h3>
                   <div className="progress-bar-track" style={{ height: 4 }}>
                     <div className="progress-bar-fill" style={{ width: `${pProgress}%` }} />
                   </div>
@@ -183,7 +180,7 @@ const Dashboard = () => {
                );
             })}
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

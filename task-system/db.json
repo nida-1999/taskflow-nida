@@ -104,6 +104,48 @@
       "password": "123456",
       "avatar": "S",
       "id": "vw2Cg-kHWGM"
+    },
+    {
+      "name": "Alice",
+      "email": "alice-new@test.com",
+      "password": "pass123",
+      "avatar": "A",
+      "id": "d35zuNIJwz4"
+    },
+    {
+      "name": "Test",
+      "email": "test-pwd@example.com",
+      "password": "123456!",
+      "avatar": "T",
+      "id": "3tBd1I-BWtU"
+    },
+    {
+      "name": "Nida",
+      "email": "s@g.com",
+      "password": "sasasassa!#",
+      "avatar": "N",
+      "id": "76bh6pVc_WQ"
+    },
+    {
+      "name": "Refactored User",
+      "email": "refactor@test.com",
+      "password": "Password123!",
+      "avatar": "R",
+      "id": "aQe1Sfeghd8"
+    },
+    {
+      "name": "lkjhgf",
+      "email": "poiuytr@j.com",
+      "password": "09876!@@",
+      "avatar": "L",
+      "id": "KMq9uhxrkbE"
+    },
+    {
+      "name": "Alice",
+      "email": "a@sssg.com",
+      "password": "122222@",
+      "avatar": "A",
+      "id": "ydgHBsXdVPM"
     }
   ],
   "projects": [
@@ -127,6 +169,20 @@
       "createdBy": "bVAehbhl5s0",
       "createdAt": "2026-04-11",
       "id": "xBbiWguAqGk"
+    },
+    {
+      "name": "dda",
+      "description": "",
+      "createdBy": "vw2Cg-kHWGM",
+      "createdAt": "2026-04-11",
+      "id": "GyF4bKjJaJg"
+    },
+    {
+      "name": "sa",
+      "description": "",
+      "createdBy": "ydgHBsXdVPM",
+      "createdAt": "2026-04-12",
+      "id": "VGPYtBdDBmo"
     }
   ],
   "tasks": [
@@ -145,8 +201,8 @@
       "id": "2",
       "projectId": "1",
       "title": "Setup design system",
-      "description": "Define colors, typography, and component library",
-      "status": "review",
+      "description": "Define colors, typography, and component librarys",
+      "status": "in-progress",
       "priority": "medium",
       "assigneeId": "1",
       "createdAt": "2026-04-03",
@@ -157,7 +213,7 @@
       "projectId": "1",
       "title": "Implement responsive nav",
       "description": "Build the responsive navigation component",
-      "status": "done",
+      "status": "in-progress",
       "priority": "medium",
       "assigneeId": "3",
       "createdAt": "2026-04-04",
@@ -179,7 +235,7 @@
       "projectId": "2",
       "title": "Design app screens",
       "description": "Create mockups for all main app screens",
-      "status": "review",
+      "status": "in-progress",
       "priority": "medium",
       "assigneeId": "2",
       "createdAt": "2026-04-07",
@@ -189,7 +245,7 @@
       "projectId": "1",
       "title": "UI Review for layout UPDATED 2",
       "description": "Check if the new layout works on mobile",
-      "status": "in-progress",
+      "status": "done",
       "priority": "high",
       "assigneeId": "3",
       "createdAt": "2026-04-10",
@@ -199,7 +255,7 @@
     {
       "title": "Test Central Task",
       "description": "This is a test task.",
-      "status": "review",
+      "status": "done",
       "priority": "high",
       "projectId": "1",
       "assigneeId": "1",
@@ -221,7 +277,7 @@
     {
       "title": "jhgf",
       "description": ",,",
-      "status": "todo",
+      "status": "in-progress",
       "priority": "high",
       "projectId": "1",
       "assigneeId": "1",
@@ -232,13 +288,24 @@
     {
       "title": "read about abc",
       "description": "lkj",
-      "status": "in-progress",
+      "status": "todo",
       "priority": "high",
       "projectId": "1",
       "assigneeId": "dyqytLYiZ-I",
       "dueDate": "2026-04-17",
       "createdAt": "2026-04-11T14:23:19.165Z",
       "id": "gi7Mpb942UA"
+    },
+    {
+      "title": "mk",
+      "description": "",
+      "status": "in-progress",
+      "priority": "medium",
+      "projectId": "xBbiWguAqGk",
+      "assigneeId": "ex_luTe4Vr0",
+      "dueDate": "2026-04-15",
+      "createdAt": "2026-04-11T21:04:35.212Z",
+      "id": "tQtL-smnO4g"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

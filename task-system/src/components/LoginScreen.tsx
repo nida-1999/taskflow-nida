@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Heading from "./input/Heading";
-import Input from "./input/Input";
-import Button from "./input/Button";
-import Card from "./input/Card";
+import Button from "./ui/Button";
+import Input from "./ui/Input";
+import Card from "./ui/Card";
+import { Heading, Text } from "./ui/Typography";
 
 const LoginScreen = () => {
   const [isRegister, setIsRegister] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,18 +20,38 @@ const LoginScreen = () => {
   const { login, register } = useAuth();
   const navigate = useNavigate();
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
-    if (!name.trim() || !password.trim()) {
-      setError("Name and password are required.");
+    const { name, email, password } = formData;
+
+    if (!email.trim() || !password.trim()) {
+      setError("Email and password are required.");
       return;
     }
 
-    if (isRegister && !email.trim()) {
-      setError("Email is required for registration.");
-      return;
+    if (isRegister) {
+      if (!name.trim()) {
+        setError("Name is required for registration.");
+        return;
+      }
+      
+      if (password.length < 6) {
+        setError("Password must be at least 6 characters long.");
+        return;
+      }
+
+      const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+      if (!specialCharRegex.test(password)) {
+        setError("Password must include at least one special character.");
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -38,7 +60,7 @@ const LoginScreen = () => {
       if (isRegister) {
         await register(name.trim(), email.trim(), password);
       } else {
-        await login(name.trim(), password);
+        await login(email.trim(), password);
       }
       navigate("/dashboard");
     } catch (err) {
@@ -51,132 +73,82 @@ const LoginScreen = () => {
   const toggleMode = () => {
     setIsRegister((prev) => !prev);
     setError(null);
+    setFormData({
+      name : "",
+      email : "",
+      password : ""
+    })
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "var(--bg-primary)",
-        padding: 24,
-      }}
-    >
-      <Card 
-        className="animate-fade-in" 
-        style={{ 
-          width: "100%", 
-          maxWidth: 420, 
-          padding: 40,
-          boxShadow: "0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05)"
-        }}
-      >
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 !p-6">
+      <Card className="w-full max-w-[420px] !p-10 animate-fade-in shadow-xl">
         {/* Logo */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: 32 }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              background: "#0f172a",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1.25rem",
-              color: "white",
-            }}
-          >
+        <div className="flex justify-center mb-8">
+          <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center text-xl text-white">
             ⚡
           </div>
         </div>
 
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <Heading level={1} style={{ color: "#0f172a" }}>
+        <div className="text-center !mb-8">
+          <Heading variant="h2" className="!mb-2">
             {isRegister ? "Create account" : "Sign in to TaskFlow"}
           </Heading>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+          <Text variant="small">
             {isRegister ? "Start managing your projects today." : "Welcome back to your workspace."}
-          </p>
+          </Text>
         </div>
 
         {error && (
           <div
             role="alert"
-            style={{
-              padding: "12px 14px",
-              borderRadius: 8,
-              background: "#fef2f2",
-              border: "1px solid #fee2e2",
-              color: "#ef4444",
-              fontSize: "0.85rem",
-              marginBottom: 24,
-              fontWeight: 500
-            }}
+            className="!py-3 !px-[14px] rounded-lg bg-red-50 border border-red-100 text-red-500 text-[0.85rem] mb-6 font-medium animate-in fade-in slide-in-from-top-1"
           >
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)" }}>Name</label>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          {isRegister && (
             <Input
+              label="Name"
               type="text"
+              name="name"
               placeholder="Your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={formData.name}
+              onChange={handleChange}
               required
             />
-          </div>
-
-          {isRegister && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)" }}>Email</label>
-              <Input
-                type="email"
-                placeholder="Email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
           )}
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)" }}>Password</label>
-              {!isRegister && (
-                <button type="button" style={{ background: "none", border: "none", color: "var(--accent)", fontSize: "0.75rem", fontWeight: 600, cursor: "pointer" }}>
-                  Forgot?
-                </button>
-              )}
+          <Input
+            label="Email"
+            type="email"
+            name="email"
+            placeholder="Email address"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-center">
+              <label className="text-[0.8rem] font-semibold text-slate-500">Password</label>
             </div>
-            <div style={{ position: "relative" }}>
+            <div className="relative">
               <Input
                 type={showPassword ? "text" : "password"}
-                style={{ width: "100%", paddingRight: 60 }}
+                name="password"
+                className="pr-16"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={formData.password}
+                onChange={handleChange}
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{
-                  position: "absolute",
-                  right: 12,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  background: "none",
-                  border: "none",
-                  color: "var(--text-secondary)",
-                  fontSize: "0.7rem",
-                  fontWeight: 600,
-                  cursor: "pointer"
-                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-slate-400 text-[0.7rem] font-bold cursor-pointer hover:text-slate-600 px-2 py-1 rounded"
               >
                 {showPassword ? "HIDE" : "SHOW"}
               </button>
@@ -185,27 +157,21 @@ const LoginScreen = () => {
 
           <Button
             type="submit"
+            className="mt-2 w-full"
             isLoading={isLoading}
-            style={{ marginTop: 8 }}
           >
             {isRegister ? "Create Account" : "Sign In"}
           </Button>
 
-          <p style={{ textAlign: "center", fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: 8 }}>
+          <p className="text-center text-[0.85rem] text-slate-500 !mt-2">
             {isRegister ? "Already have an account?" : "No account yet?"}{" "}
-            <button
+            <Button
+              variant="link"
               type="button"
               onClick={toggleMode}
-              style={{
-                background: "none",
-                border: "none",
-                color: "var(--accent)",
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
             >
-              {isRegister ? "Sign In" : "Create Account"}
-            </button>
+              <p className="!mx-1">{isRegister ? "Sign In" : "Create Account"} </p>
+            </Button>
           </p>
         </form>
       </Card>

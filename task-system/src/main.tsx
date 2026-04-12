@@ -18,9 +18,10 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           {/* Public */}
+          
           <Route path="/login" element={<LoginScreen />} />
 
-          {/* Protected */}
+
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
@@ -30,7 +31,7 @@ createRoot(document.getElementById("root")!).render(
             </Route>
           </Route>
 
-          {/* Default redirect */}
+  
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>

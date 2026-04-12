@@ -24,12 +24,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = async (name: string, password: string) => {
-    const res = await api.get<User[]>(`/users?name=${encodeURIComponent(name)}`);
+  const login = async (email: string, password: string) => {
+    const res = await api.get<User[]>(`/users?email=${encodeURIComponent(email)}`);
     const users = res.data;
 
     if (users.length === 0) {
-      throw new Error("No account found with that name. Please register first.");
+      throw new Error("No account found with that email. Please register first.");
     }
 
     const matched = users[0];
@@ -45,10 +45,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    // Check if name is already taken
-    const existing = await api.get<User[]>(`/users?name=${encodeURIComponent(name)}`);
+    // Check if email is already taken
+    const existing = await api.get<User[]>(`/users?email=${encodeURIComponent(email)}`);
     if (existing.data.length > 0) {
-      throw new Error("An account with that name already exists. Please sign in.");
+      throw new Error("An account with that email already exists. Please sign in.");
+    }
+
+    if (password.length < 6) {
+      throw new Error("Password must be at least 6 characters long.");
+    }
+
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    if (!specialCharRegex.test(password)) {
+      throw new Error("Password must include at least one special character.");
     }
 
     const avatar = name.charAt(0).toUpperCase();
