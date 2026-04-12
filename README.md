@@ -30,7 +30,7 @@
 ### Running Locally
 ```bash
 git clone https://github.com/nida-1999/taskflow-nida
-cd taskflow-nida
+cd taskflow-nida/task-system
 docker compose up
 
 # App available at http://localhost:80
