@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Text } from "./Typography";
+import { useMobile } from "../../hooks/useMobile";
 
 export interface Option {
   value: string;
@@ -25,6 +26,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useMobile()
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -47,7 +49,7 @@ const SingleSelect: React.FC<SingleSelectProps> = ({
 
   return (
     <div ref={ref} className={`flex flex-col gap-1 relative ${className}`}>
-      {label && <Text variant="tiny">{label}</Text>}
+      {label && !isMobile ? <Text variant="tiny">{label}</Text> : ""} 
       
       {/* Trigger */}
       <button

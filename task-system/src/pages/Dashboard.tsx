@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProjects, getAllTasks } from "../services";
 import type { Project, Task } from "../types";
+import { useMobile } from "../hooks/useMobile";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -10,6 +11,7 @@ const Dashboard = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const isMobile = useMobile()
 
   useEffect(() => {
     const load = async () => {
@@ -67,7 +69,7 @@ const Dashboard = () => {
       </header>
 
       {/* Bento Grid */}
-      <div className="bento-grid">
+      <div className={isMobile ? "" : "bento-grid"}>
         {/* Today's Focus */}
         <div className="card bento-focus" style={{ padding: 32, display: "flex", flexDirection: "column" }}>
           <div style={{ marginBottom: 24 }}>
@@ -116,8 +118,8 @@ const Dashboard = () => {
         </div>
 
         {/* Upcoming Tasks */}
-        <div className="card" style={{ padding: 24 }}>
-          <span className="column-label" style={{ fontSize: "0.7rem", marginBottom: 16, display: "block" }}>Upcoming</span>
+        <div className={`card !p-6 ${isMobile ? "!mt-6" : ""} `}>
+          <span className="column-label text-[0.7rem] !mb-4 block">Upcoming</span>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {upcomingTasks.length > 0 ? (
               upcomingTasks.map(task => (
@@ -146,15 +148,15 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {/* Stats Placeholder or Mini Card */}
-        <div className="card" style={{ padding: 24, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center" }}>
-          <div style={{ fontSize: "2rem", marginBottom: 8 }}>📈</div>
-          <div style={{ fontSize: "1.25rem", fontWeight: 700 }}>{Math.round((tasks.filter(t => t.status === "done").length / (tasks.length || 1)) * 100)}%</div>
-          <div style={{ fontSize: "0.75rem", color: "var(--text-secondary)", fontWeight: 500 }}>Overall Completion</div>
+        
+        <div className={`card !p-6 flex flex-col justify-center items-center text-center ${isMobile ? "!my-6" : ""}`}>
+          <div className="text-[2rem] !mb-2">📈</div>
+          <div className="text-[1.25rem] font-bold">{Math.round((tasks.filter(t => t.status === "done").length / (tasks.length || 1)) * 100)}%</div>
+          <div className="text-[0.75rem] text-secondary font-medium">Overall Completion</div>
         </div>
 
         {/* Recent Projects (Wide Row at bottom) */}
-        <div className="card" style={{ gridColumn: "span 3", padding: 24 }}>
+        <div className="card !p-6" style={{ gridColumn: "span 3"}}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <span className="column-label" style={{ fontSize: "0.7rem" }}>Recent Projects</span>
             <button className="btn-outline" onClick={() => navigate("/projects")} style={{ padding: "4px 12px", fontSize: "0.75rem" }}>

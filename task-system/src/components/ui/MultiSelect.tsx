@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Text } from "./Typography";
+import { useMobile } from "../../hooks/useMobile";
 
 interface Option {
   value: string;
@@ -25,6 +26,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const isMobile = useMobile()
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -53,7 +55,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div ref={ref} className={`flex flex-col gap-1 relative ${className}`}>
-      <Text variant="tiny">{label}</Text>
+      {isMobile ? "" :<Text variant="tiny">{label}</Text>} 
       
       {/* Trigger */}
       <button

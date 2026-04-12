@@ -23,13 +23,12 @@ import Button from "../components/ui/Button";
 import MultiSelect from "../components/ui/MultiSelect";
 import { Heading, Text } from "../components/ui/Typography";
 import SingleSelect from "../components/ui/SingleSelect";
-import Badge from "../components/ui/Badge";
-import Avatar from "../components/ui/Avatar";
 import Modal from "../components/ui/Modal";
 
 // Extracted Components
 import TaskCard from "../components/TaskCard";
 import KanbanColumn from "../components/KanbanColumn";
+import TaskListItem from "../components/TaskListItem";
 import TaskModal from "../components/TaskModal";
 import CreateTaskForm from "../components/CreateTaskForm";
 
@@ -109,6 +108,7 @@ const TasksPage: React.FC = () => {
 
   const hasActiveFilters = filters.statuses.length > 0 || filters.assignees.length > 0 || filters.search !== "";
   const project = projectId ? projects.find(p => p.id === projectId) : null;
+  const effectiveViewMode = isMobile ? "list" : viewMode;
 
   const handleDragStart = (event: DragStartEvent) => {
     const activeId = String(event.active.id);
@@ -220,7 +220,7 @@ const TasksPage: React.FC = () => {
 
       <div className={`bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl !p-4 flex ${isMobile ? "flex-col" : "items-end flex-wrap"} gap-4`}>
         <div className={`flex flex-col gap-1 ${isMobile ? "w-full" : "flex-1 min-w-[220px]"}`}>
-          <Text variant="tiny">Search</Text>
+          {isMobile ? "" : <Text variant="tiny">Search</Text>}
           <div className="relative group">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-[var(--accent)] transition-colors">🔍</span>
             <input className="w-full h-9 !pl-8 !pr-3 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[0.85rem] outline-none focus:border-[var(--accent)] focus:ring-4 focus:ring-indigo-600/10 transition-all placeholder:text-[var(--text-secondary)]" placeholder="Search tasks..." value={filters.search} onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))} />
@@ -244,7 +244,7 @@ const TasksPage: React.FC = () => {
         <Button variant="ghost" className={`h-9 !px-4 text-[0.82rem] font-bold self-end ${hasActiveFilters ? "text-red-500" : "text-slate-300 pointer-events-none"}`} onClick={() => setFilters({ statuses: [], assignees: [], search: "" })}>✕ Clear Filters</Button>
       </div>
 
-      {hasActiveFilters && (
+      {hasActiveFilters && !isMobile && (
         <div className="flex items-center gap-2 flex-wrap -mt-2">
           <Text variant="tiny" className="font-bold text-slate-400 uppercase">Filtered By:</Text>
           {filters.search && <FilterPill label="Search" value={filters.search} onRemove={() => setFilters(f => ({ ...f, search: "" }))} />}
@@ -253,47 +253,39 @@ const TasksPage: React.FC = () => {
         </div>
       )}
 
-      {viewMode === "kanban" ? (
-        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto !pb-6 custom-scrollbar">
+      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+        <div className={effectiveViewMode === "list" ? "bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden" : ""}>
+          <div className={effectiveViewMode === "kanban" 
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto !pb-6 custom-scrollbar" 
+            : "flex flex-col gap-0 !pb-10"
+          }>
             {["todo", "in-progress", "review", "done"].map(status => (
-              <KanbanColumn key={status} id={status as any} title={status.replace('-', ' ')} tasks={filteredTasks.filter(t => t.status === (status as any))} users={users} projects={projects} onTaskClick={t => setSelectedTaskState({ task: t, mode: "view" })} onTaskEdit={t => setSelectedTaskState({ task: t, mode: "edit" })} />
+              <KanbanColumn 
+                key={status}
+                id={status as any} 
+                title={status.replace('-', ' ')} 
+                tasks={filteredTasks.filter(t => t.status === (status as any))} 
+                users={users} 
+                projects={projects} 
+                variant={effectiveViewMode as any}
+                onTaskClick={t => setSelectedTaskState({ task: t, mode: "view" })} 
+                onTaskEdit={t => setSelectedTaskState({ task: t, mode: "edit" })} 
+              />
             ))}
           </div>
-          <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.5" } } }) }}>
-            {activeTask && <div className="rotate-2 pointer-events-none drop-shadow-2xl"><TaskCard task={activeTask} user={users.find(u => u.id === activeTask.assigneeId)} project={projects.find(p => p.id === activeTask.projectId)} isOverlay /></div>}
-          </DragOverlay>
-        </DndContext>
-      ) : (
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl overflow-hidden overflow-x-auto">
-          <table className="w-full border-collapse min-w-[800px]">
-            <thead>
-              <tr className="bg-[var(--nav-bg)] border-b border-[var(--border)]">
-                {["Task", "Project", "Assignee", "Status", "Priority", "Due Date", "Actions"].map(h => <th key={h} className="text-left !px-6 !py-4 text-[0.7rem] font-bold text-[var(--text-secondary)] uppercase tracking-wider">{h}</th>)}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)]">
-              {filteredTasks.length > 0 ? filteredTasks.map(task => (
-                <tr key={task.id} className="hover:bg-[var(--hover-bg)] transition-colors cursor-pointer group" onClick={() => setSelectedTaskState({ task, mode: "view" })}>
-                  <td className="!px-6 !py-4"><Text className="font-bold text-[var(--heading-color)]">{task.title}</Text></td>
-                  <td className="!px-6 !py-4"><Badge variant="neutral">{projects.find(p => p.id === task.projectId)?.name || "Global"}</Badge></td>
-                  <td className="!px-6 !py-4"><div className="flex items-center gap-2"><Avatar name={users.find(u => u.id === task.assigneeId)?.name || "?"} size="sm" /><Text variant="tiny" className="font-semibold text-[var(--text-primary)]">{users.find(u => u.id === task.assigneeId)?.name}</Text></div></td>
-                  <td className="!px-6 !py-4"><Badge variant="neutral" className="capitalize">{task.status.replace("-", " ")}</Badge></td>
-                  <td className="!px-6 !py-4"><Badge variant={task.priority as any}>{task.priority}</Badge></td>
-                  <td className="!px-6 !py-4"><Text variant="tiny" className="font-medium text-[var(--text-secondary)]">{task.dueDate || "-"}</Text></td>
-                  <td className="!px-6 py-4 text-center">
-                    <button className="!p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--accent)] hover:bg-[var(--bg-primary)] transition-all opacity-0 group-hover:opacity-100" onClick={e => { e.stopPropagation(); setSelectedTaskState({ task, mode: "edit" }); }}>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                    </button>
-                  </td>
-                </tr>
-              )) : (
-                <tr><td colSpan={7} className="!px-6 !py-20 text-center"><Text className="font-bold text-[var(--text-secondary)]">No tasks found matching your filters.</Text><button onClick={() => setFilters({ statuses: [], assignees: [], search: "" })} className="text-[var(--accent)] font-bold hover:underline">Reset all filters</button></td></tr>
-              )}
-            </tbody>
-          </table>
         </div>
-      )}
+        <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.5" } } }) }}>
+          {activeTask && (
+            <div className="rotate-2 pointer-events-none drop-shadow-2xl">
+              {effectiveViewMode === "kanban" ? (
+                <TaskCard task={activeTask} user={users.find(u => u.id === activeTask.assigneeId)} project={projects.find(p => p.id === activeTask.projectId)} isOverlay />
+              ) : (
+                <TaskListItem task={activeTask} user={users.find(u => u.id === activeTask.assigneeId)} project={projects.find(p => p.id === activeTask.projectId)} isOverlay />
+              )}
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
 
       {selectedTaskState && (
         <TaskModal task={selectedTaskState.task} initialMode={selectedTaskState.mode} user={users.find(u => u.id === selectedTaskState.task.assigneeId)} users={users} project={projects.find(p => p.id === selectedTaskState.task.projectId)} onClose={() => setSelectedTaskState(null)} onUpdate={updated => setTasks(prev => prev.map(t => t.id === updated.id ? updated : t))} />
