@@ -95,13 +95,8 @@ const TaskCard: React.FC<TaskCardProps> = ({
               </Badge>
               {task.dueDate && (
                 <div className="flex items-center gap-1 flex items-center gap-1 text-[var(--text-secondary)] text-[0.7rem] font-bold">
-                  <span>📅</span>
+                  <span>⌛</span>
                   <span>{task.dueDate.split("-").slice(1).join("/")}</span>
-                </div>
-              )}
-              {task.description && (
-                <div className="text-[var(--text-secondary)] text-[0.7rem]">
-                  <span>💬</span>
                 </div>
               )}
             </div>

@@ -83,7 +83,7 @@ const TaskListItem: React.FC<TaskListItemProps> = ({
         <div className="hidden sm:flex items-center gap-4">
           {task.dueDate && (
             <div className="flex items-center gap-1.5 text-[0.65rem] font-bold text-[var(--text-secondary)]">
-              <span>📅</span>
+              <span>⏱️</span>
               <span>{task.dueDate.split("-").slice(1).join("/")}</span>
             </div>
           )}

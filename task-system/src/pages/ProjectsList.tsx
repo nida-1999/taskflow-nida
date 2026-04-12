@@ -3,7 +3,9 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getProjects, createProject, deleteProject, deleteTasksByProject, getAllTasks } from "../services";
+import Modal from "../components/ui/Modal";
 import type { Project, Task } from "../types";
+import { useMobile } from "../hooks/useMobile";
 
 const ProjectsList = () => {
   const { user } = useAuth();
@@ -15,6 +17,9 @@ const ProjectsList = () => {
   const [newProject, setNewProject] = useState({ name: "", description: "" });
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const isMobile = useMobile()
 
   const load = async () => {
     try {
@@ -54,19 +59,26 @@ const ProjectsList = () => {
     }
   };
 
-  const handleDelete = async (id: string, e: React.MouseEvent) => {
+  const handleDelete = (project: Project, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!confirm("Delete this project and all its tasks?")) return;
+    setProjectToDelete(project);
+    setShowDeleteModal(true);
+  };
 
-    setDeletingId(id);
+  const confirmDelete = async () => {
+    if (!projectToDelete) return;
+
+    setDeletingId(projectToDelete.id);
+    setShowDeleteModal(false);
     try {
-      await deleteTasksByProject(id);
-      await deleteProject(id);
+      await deleteTasksByProject(projectToDelete.id);
+      await deleteProject(projectToDelete.id);
       await load();
     } catch (err) {
       console.error("Failed to delete project:", err);
     } finally {
       setDeletingId(null);
+      setProjectToDelete(null);
     }
   };
 
@@ -81,19 +93,10 @@ const ProjectsList = () => {
   return (
     <div className="animate-fade-in">
       {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 40,
-        }}
-      >
+      <div className="flex items-center justify-between !mb-10">
         <div>
-          <h1 style={{ fontSize: "1.75rem", fontWeight: 700, marginBottom: 4 }}>Projects</h1>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-            Manage your initiatives and team goals.
-          </p>
+          <h1 className ="text-[1.75rem] font-bold mb-1" >Projects</h1>
+          <p className="text-[0.9rem] text-secondary">Manage your initiatives and team goals.</p>
         </div>
         <button
           className="btn-primary"
@@ -104,7 +107,7 @@ const ProjectsList = () => {
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          New Project
+          {isMobile ? "New" :"New Project"}
         </button>
       </div>
 
@@ -150,7 +153,7 @@ const ProjectsList = () => {
               >
                 {/* Delete button (only visible on hover via CSS or just subtle) */}
                 <button
-                  onClick={(e) => handleDelete(project.id, e)}
+                  onClick={(e) => handleDelete(project, e)}
                   disabled={isDeleting}
                   aria-label={`Delete project ${project.name}`}
                   style={{
@@ -267,6 +270,34 @@ const ProjectsList = () => {
         </div>,
         document.body
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Delete Project"
+        maxWidth="max-w-md"
+        footer={
+          <>
+            <button className="btn-outline flex-1" onClick={() => setShowDeleteModal(false)}>
+              Cancel
+            </button>
+            <button className="btn-primary flex-1" style={{ backgroundColor: "var(--error)" }} onClick={confirmDelete}>
+              Yes, Delete
+            </button>
+          </>
+        }
+      >
+        <div style={{ textAlign: "center", padding: "8px 0" }}>
+          <div style={{ fontSize: "3rem", marginBottom: 16 }}>⚠️</div>
+          <p style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: 8, color: "var(--text-primary)" }}>
+            Are you sure you want to delete this project?
+          </p>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", lineHeight: 1.5 }}>
+            This action will permanently delete <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{projectToDelete?.name}</span> and all its associated tasks. This cannot be undone.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };

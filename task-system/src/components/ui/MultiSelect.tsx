@@ -55,7 +55,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
   return (
     <div ref={ref} className={`flex flex-col gap-1 relative ${className}`}>
-      {isMobile ? "" :<Text variant="tiny">{label}</Text>} 
+      {<Text variant="tiny">{label}</Text>} 
       
       {/* Trigger */}
       <button

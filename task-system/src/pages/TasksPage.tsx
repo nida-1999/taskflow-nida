@@ -12,11 +12,11 @@ import {
 } from "@dnd-kit/core";
 import type { DragStartEvent, DragOverEvent, DragEndEvent } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates, arrayMove } from "@dnd-kit/sortable";
-import Drawer from "@mui/material/Drawer";
 
 import { getAllTasks, getUsers, getProjects, updateTask } from "../services";
 import type { Task, User, Project } from "../types";
 import { useMobile } from "../hooks/useMobile";
+import { ViewMode, type ViewModeType } from "../utils";
 
 // UI Components
 import Button from "../components/ui/Button";
@@ -40,6 +40,36 @@ const FilterPill: React.FC<{ label: string; value: string; onRemove: () => void 
   </div>
 );
 
+const EmptyState: React.FC<{
+  isFilter?: boolean;
+  onClear?: () => void;
+  onCreate?: () => void;
+}> = ({ isFilter, onClear, onCreate }) => (
+  <div className="flex flex-col items-center justify-center !p-12 !py-20 rounded-3xl bg-[var(--bg-secondary)] border border-dashed border-[var(--border)] text-center animate-in fade-in zoom-in-95 duration-500">
+    <div className="text-6xl mb-6 grayscale opacity-60">
+      {isFilter ? "🔍" : "✨"}
+    </div>
+    <Heading variant="h2" className="!mb-2">
+      {isFilter ? "No results found" : "Your workspace is clear"}
+    </Heading>
+    <Text className="text-slate-500 !mb-8 max-w-sm">
+      {isFilter 
+        ? "We couldn't find any tasks matching your current filters. Try adjusting your search or filters." 
+        : "Every great project starts with a single task. Create one now to get started with your workflow."}
+    </Text>
+    <div className="flex gap-3">
+      {isFilter ? (
+        <Button variant="outline" onClick={onClear} className="!px-8 h-11 text-sm font-bold">Clear All Filters</Button>
+      ) : (
+        <Button onClick={onCreate} className="!px-8 h-11 text-sm font-bold">
+           <svg className="w-5 h-5 !mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+           Create First Task
+        </Button>
+      )}
+    </div>
+  </div>
+);
+
 const TasksPage: React.FC = () => {
   const { projectId } = useParams<{ projectId?: string }>();
   const navigate = useNavigate();
@@ -50,14 +80,16 @@ const TasksPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
+  const [viewMode, setViewMode] = useState<ViewModeType>(ViewMode.KANBAN);
   const [selectedTaskState, setSelectedTaskState] = useState<{ task: Task; mode: "view" | "edit" } | null>(null);
   const [isCreatingTask, setIsCreatingTask] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
 
   const [filters, setFilters] = useState({
     statuses: [] as string[],
     assignees: [] as string[],
+    projects: [] as string[],
     search: "",
   });
   const [sortBy, setSortBy] = useState<"createdAt" | "dueDate" | "priority" | "manual">("manual");
@@ -83,14 +115,18 @@ const TasksPage: React.FC = () => {
     fetchData();
   }, []);
 
+  const projectTasks = useMemo(() => {
+    return tasks.filter((t) => !projectId || t.projectId === projectId);
+  }, [tasks, projectId]);
+
   const filteredTasks = useMemo(() => {
-    const filtered = tasks.filter((t) => {
-      if (projectId && t.projectId !== projectId) return false;
+    const filtered = projectTasks.filter((t) => {
       const matchStatus = filters.statuses.length === 0 || filters.statuses.includes(t.status);
       const matchAssignee = filters.assignees.length === 0 || filters.assignees.includes(t.assigneeId);
+      const matchProject = filters.projects.length === 0 || filters.projects.includes(t.projectId);
       const matchSearch = (t.title || "").toLowerCase().includes(filters.search.toLowerCase()) || 
                          (t.description || "").toLowerCase().includes(filters.search.toLowerCase());
-      return matchStatus && matchAssignee && matchSearch;
+      return matchStatus && matchAssignee && matchSearch && matchProject;
     });
 
     if (sortBy === "manual") return filtered;
@@ -106,9 +142,24 @@ const TasksPage: React.FC = () => {
     });
   }, [tasks, filters, sortBy, projectId]);
 
-  const hasActiveFilters = filters.statuses.length > 0 || filters.assignees.length > 0 || filters.search !== "";
+  const hasActiveFilters = 
+    filters.statuses.length > 0 || 
+    filters.assignees.length > 0 || 
+    filters.projects.length > 0 || 
+    filters.search !== "" || 
+    sortBy !== "manual";
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.statuses.length > 0) count += filters.statuses.length;
+    if (filters.assignees.length > 0) count += filters.assignees.length;
+    if (filters.projects.length > 0) count += filters.projects.length;
+    if (sortBy !== "manual") count += 1;
+    return count;
+  }, [filters, sortBy]);
+
   const project = projectId ? projects.find(p => p.id === projectId) : null;
-  const effectiveViewMode = isMobile ? "list" : viewMode;
+  const effectiveViewMode = isMobile ? ViewMode.LIST : viewMode;
 
   const handleDragStart = (event: DragStartEvent) => {
     const activeId = String(event.active.id);
@@ -193,7 +244,7 @@ const TasksPage: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-500">
-      <div className={`flex ${isMobile ? "flex-col" : "row"} justify-between items-center gap-4`}>
+      <div className={` ${isMobile ? "" : "flex justify-between"} items-center gap-4`}>
         <div>
           {projectId && (
             <button onClick={() => navigate("/projects")} className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 transition-colors mb-2 text-sm font-bold">
@@ -202,105 +253,224 @@ const TasksPage: React.FC = () => {
             </button>
           )}
           <Heading variant="h1">{project ? project.name : "Tasks"}</Heading>
-          <Text variant="small" className="mt-1 text-slate-500 max-w-xl">{project ? project.description : "Manage your team's activities and deadlines."}</Text>
+          <Text variant="small" className={`mt-1 text-slate-500 max-w-xl ${isMobile ? "!mb-4" : ""}`}>{project ? project.description : "Manage your team's activities and deadlines."}</Text>
         </div>
         <div className={`flex ${isMobile ? "flex-col w-full" : "row"} gap-3 items-center`}>
           <Button className={isMobile ? "w-full" : "h-10 !px-6"} onClick={() => setIsCreatingTask(true)}>
-            <svg className="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+            <svg className="w-5 h-5 !mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
             Create Task
           </Button>
           {!isMobile && (
-            <div className="flex bg-[var(--nav-bg)] !p-1 rounded-xl border border-[var(--border)]">
-              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "kanban" ? "bg-[var(--bg-secondary)] text-[var(--accent)] shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`} onClick={() => setViewMode("kanban")}>Kanban</button>
-              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "list" ? "bg-[var(--bg-secondary)] text-[var(--accent)] shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`} onClick={() => setViewMode("list")}>List</button>
+            <div className="flex bg-[var(--nav-bg)] !p-1 rounded-2xl border border-[var(--border)]">
+              <button className={`!px-4 !py-[4px] rounded-xl text-sm font-bold !cursor-pointer transition-all ${viewMode === ViewMode.KANBAN ? "bg-[var(--bg-secondary)] text-[var(--accent)] shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`} onClick={() => setViewMode(ViewMode.KANBAN)}>Kanban</button>
+              <button className={`!px-4 !py-[4px] rounded-xl text-sm font-bold !cursor-pointer transition-all ${viewMode === ViewMode.LIST ? "bg-[var(--bg-secondary)] text-[var(--accent)] shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}`} onClick={() => setViewMode(ViewMode.LIST)}>List</button>
             </div>
           )}
         </div>
       </div>
 
-      <div className={`bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl !p-4 flex ${isMobile ? "flex-col" : "items-end flex-wrap"} gap-4`}>
-        <div className={`flex flex-col gap-1 ${isMobile ? "w-full" : "flex-1 min-w-[220px]"}`}>
-          {isMobile ? "" : <Text variant="tiny">Search</Text>}
-          <div className="relative group">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-[var(--accent)] transition-colors">🔍</span>
-            <input className="w-full h-9 !pl-8 !pr-3 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[0.85rem] outline-none focus:border-[var(--accent)] focus:ring-4 focus:ring-indigo-600/10 transition-all placeholder:text-[var(--text-secondary)]" placeholder="Search tasks..." value={filters.search} onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))} />
-          </div>
-        </div>
-        {!isMobile && <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />}
-        <MultiSelect label="Status" placeholder="Filter status" options={[{ value: "todo", label: "To Do" }, { value: "in-progress", label: "In Progress" }, { value: "review", label: "Review" }, { value: "done", label: "Done" }]} selected={filters.statuses} onChange={(vals) => setFilters(f => ({ ...f, statuses: vals }))} />
-        <MultiSelect label="Assignee" placeholder="Filter assignee" options={users.map(u => ({ value: u.id, label: u.name }))} selected={filters.assignees} onChange={(vals) => setFilters(f => ({ ...f, assignees: vals }))} />
-        {!isMobile && <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />}
-        <SingleSelect
-          label="Sort by"
-          value={sortBy}
-          onChange={(val) => setSortBy(val as any)}
-          options={[
-            { value: "manual", label: "Manual" },
-            { value: "createdAt", label: "Newest first" },
-            { value: "dueDate", label: "Due date" },
-            { value: "priority", label: "Priority" },
-          ]}
-        />
-        <Button variant="ghost" className={`h-9 !px-4 text-[0.82rem] font-bold self-end ${hasActiveFilters ? "text-red-500" : "text-slate-300 pointer-events-none"}`} onClick={() => setFilters({ statuses: [], assignees: [], search: "" })}>✕ Clear Filters</Button>
-      </div>
+      {projectTasks.length > 0 && (
+        <>
+          {isMobile ? (
+            <div className="flex gap-2 items-center bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl !p-3 shadow-sm animate-in fade-in duration-300">
+              <div className="relative flex-1 group">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-[var(--accent)] transition-colors">🔍</span>
+                <input 
+                  className="w-full h-10 !pl-9 !pr-4 rounded-xl border border-[var(--border)] bg-[var(--bg-primary)] text-[var(--text-primary)] text-[0.85rem] outline-none focus:border-[var(--accent)] focus:ring-4 focus:ring-indigo-600/10 transition-all placeholder:text-[var(--text-secondary)]" 
+                  placeholder="Search tasks..." 
+                  value={filters.search} 
+                  onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))} 
+                />
+              </div>
+              <button 
+                onClick={() => setIsFilterModalOpen(true)}
+                className={`flex items-center gap-2 h-10 !px-4 rounded-xl border font-bold text-sm transition-all whitespace-nowrap ${
+                  activeFilterCount > 0 
+                    ? "bg-[var(--accent-light)] border-[var(--accent)] text-[var(--accent)]" 
+                    : "bg-[var(--bg-primary)] border-[var(--border)] text-[var(--text-secondary)]"
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>
+                <span>Filters</span>
+                {activeFilterCount > 0 && (
+                   <span className="flex items-center justify-center min-w-[18px] h-[18px] bg-[var(--accent)] text-white text-[0.65rem] rounded-full !px-1">
+                     {activeFilterCount}
+                   </span>
+                )}
+              </button>
+            </div>
+          ) : (
+            <div className="bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl !p-4 flex items-end flex-wrap gap-4 animate-in fade-in duration-300">
+              <div className="flex flex-col gap-1 flex-1">
+                <Text variant="tiny">Search</Text>
+                <div className="relative group">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-[var(--accent)] transition-colors">🔍</span>
+                  <input className="w-full h-9 !pl-8 !pr-3 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-primary)] text-[0.85rem] outline-none focus:border-[var(--accent)] focus:ring-4 focus:ring-indigo-600/10 transition-all placeholder:text-[var(--text-secondary)]" placeholder="Search tasks..." value={filters.search} onChange={(e) => setFilters(f => ({ ...f, search: e.target.value }))} />
+                </div>
+              </div>
+              <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />
+              <MultiSelect label="Status" placeholder="Filter status" options={[{ value: "todo", label: "To Do" }, { value: "in-progress", label: "In Progress" }, { value: "review", label: "Review" }, { value: "done", label: "Done" }]} selected={filters.statuses} onChange={(vals) => setFilters(f => ({ ...f, statuses: vals }))} />
+              <MultiSelect label="Assignee" placeholder="Filter assignee" options={users.map(u => ({ value: u.id, label: u.name }))} selected={filters.assignees} onChange={(vals) => setFilters(f => ({ ...f, assignees: vals }))} />
+              <MultiSelect 
+                label="Project" 
+                placeholder="Filter project" 
+                options={projects.map(p => ({ value: p.id, label: p.name }))} 
+                selected={filters.projects} 
+                onChange={(vals) => setFilters(f => ({ ...f, projects: vals }))} 
+              />
+              <div className="w-px h-10 bg-[var(--border)] self-end mb-0.5" />
+              <SingleSelect
+                label="Sort by"
+                value={sortBy}
+                onChange={(val) => setSortBy(val as any)}
+                options={[
+                  { value: "createdAt", label: "Newest first" },
+                  { value: "dueDate", label: "Due date" },
+                  { value: "priority", label: "Priority" },
+                ]}
+                placeholder="Sort by"
+              />
+            </div>
+          )}
 
-      {hasActiveFilters && !isMobile && (
-        <div className="flex items-center gap-2 flex-wrap -mt-2">
-          <Text variant="tiny" className="font-bold text-slate-400 uppercase">Filtered By:</Text>
+          {isMobile && isFilterModalOpen && (
+            <Modal 
+              isOpen={isFilterModalOpen} 
+              onClose={() => setIsFilterModalOpen(false)} 
+              title="Filters"
+              footer={
+                <div className="flex w-full gap-3">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1 opacity-60 font-bold" 
+                    onClick={() => {
+                      setFilters({ ...filters, statuses: [], assignees: [], projects: [] });
+                      setSortBy("manual");
+                    }}
+                  >
+                    Clear All
+                  </Button>
+                  <Button className="flex-1 font-bold" onClick={() => setIsFilterModalOpen(false)}>Done</Button>
+                </div>
+              }
+            >
+              <div className="flex flex-col gap-6 !pb-10">
+                <MultiSelect label="Status" placeholder="Select Status" options={[{ value: "todo", label: "To Do" }, { value: "in-progress", label: "In Progress" }, { value: "review", label: "Review" }, { value: "done", label: "Done" }]} selected={filters.statuses} onChange={(vals) => setFilters(f => ({ ...f, statuses: vals }))} className="w-full" />
+                <MultiSelect label="Assignee" placeholder="Select Assignee" options={users.map(u => ({ value: u.id, label: u.name }))} selected={filters.assignees} onChange={(vals) => setFilters(f => ({ ...f, assignees: vals }))} className="w-full" />
+                <MultiSelect 
+                  label="Project" 
+                  placeholder="Select Project" 
+                  options={projects.map(p => ({ value: p.id, label: p.name }))} 
+                  selected={filters.projects} 
+                  onChange={(vals) => setFilters(f => ({ ...f, projects: vals }))} 
+                  className="w-full"
+                />
+                <SingleSelect
+                  label="Sort by"
+                  value={sortBy}
+                  onChange={(val) => setSortBy(val as any)}
+                  options={[
+                    { value: "createdAt", label: "Newest first" },
+                    { value: "dueDate", label: "Due date" },
+                    { value: "priority", label: "Priority" },
+                  ]}
+                  placeholder="Sort by"
+                  className="w-full"
+                />
+              </div>
+            </Modal>
+          )}
+        </>
+      )}
+
+      {projectTasks.length > 0 && hasActiveFilters && (
+        <div className={`flex items-center gap-2 flex-wrap animate-in fade-in duration-300 ${isMobile ? "px-2 pb-2" : "-mt-2"}`}>
+          {!isMobile && <Text variant="tiny" className="font-bold text-slate-400 uppercase">Active filters:</Text>}
           {filters.search && <FilterPill label="Search" value={filters.search} onRemove={() => setFilters(f => ({ ...f, search: "" }))} />}
           {filters.statuses.map(s => <FilterPill key={s} label="Status" value={s.replace('-', ' ')} onRemove={() => setFilters(f => ({ ...f, statuses: f.statuses.filter(x => x !== s) }))} />)}
           {filters.assignees.map(a => <FilterPill key={a} label="Assignee" value={users.find(u => u.id === a)?.name || ""} onRemove={() => setFilters(f => ({ ...f, assignees: f.assignees.filter(x => x !== a) }))} />)}
+          {filters.projects.map(p => <FilterPill key={p} label="Project" value={projects.find(proj => proj.id === p)?.name || ""} onRemove={() => setFilters(f => ({ ...f, projects: f.projects.filter(x => x !== p) }))} />)}
+          {sortBy !== "manual" && (
+            <FilterPill 
+              label="Sort" 
+              value={sortBy === "createdAt" ? "Newest first" : sortBy === "dueDate" ? "Due date" : "Priority"} 
+              onRemove={() => setSortBy("manual")} 
+            />
+          )}
+          <Button 
+            variant="ghost" 
+            className="h-8 !px-4 text-[0.75rem] font-bold text-black bg-red-50 border border-red-100 hover:bg-red-100 hover:border-red-200 transition-all rounded-lg !ml-2 shadow-sm"
+            onClick={() => {
+              setFilters({ statuses: [], assignees: [], projects: [], search: "" });
+              setSortBy("manual");
+            }}
+          >
+            ✕ Clear All
+          </Button>
         </div>
       )}
 
-      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-        <div className={effectiveViewMode === "list" ? "bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden" : ""}>
-          <div className={effectiveViewMode === "kanban" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto !pb-6 custom-scrollbar" 
-            : "flex flex-col gap-0 !pb-10"
-          }>
-            {["todo", "in-progress", "review", "done"].map(status => (
-              <KanbanColumn 
-                key={status}
-                id={status as any} 
-                title={status.replace('-', ' ')} 
-                tasks={filteredTasks.filter(t => t.status === (status as any))} 
-                users={users} 
-                projects={projects} 
-                variant={effectiveViewMode as any}
-                onTaskClick={t => setSelectedTaskState({ task: t, mode: "view" })} 
-                onTaskEdit={t => setSelectedTaskState({ task: t, mode: "edit" })} 
-              />
-            ))}
-          </div>
-        </div>
-        <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.5" } } }) }}>
-          {activeTask && (
-            <div className="rotate-2 pointer-events-none drop-shadow-2xl">
-              {effectiveViewMode === "kanban" ? (
-                <TaskCard task={activeTask} user={users.find(u => u.id === activeTask.assigneeId)} project={projects.find(p => p.id === activeTask.projectId)} isOverlay />
-              ) : (
-                <TaskListItem task={activeTask} user={users.find(u => u.id === activeTask.assigneeId)} project={projects.find(p => p.id === activeTask.projectId)} isOverlay />
-              )}
+      {filteredTasks.length === 0 ? (
+        <EmptyState 
+          isFilter={hasActiveFilters} 
+          onClear={() => {
+            setFilters({ statuses: [], assignees: [], projects: [], search: "" });
+            setSortBy("manual");
+          }}
+          onCreate={() => setIsCreatingTask(true)}
+        />
+      ) : (
+        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+          <div className={effectiveViewMode === ViewMode.LIST ? "bg-[var(--bg-secondary)] border border-[var(--border)] rounded-2xl shadow-sm overflow-hidden" : ""}>
+            <div className={effectiveViewMode === ViewMode.KANBAN 
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto !pb-6 custom-scrollbar" 
+              : "flex flex-col gap-0 !pb-10"
+            }>
+              {["todo", "in-progress", "review", "done"].map(status => (
+                <KanbanColumn 
+                  key={status}
+                  id={status as any} 
+                  title={status.replace('-', ' ')} 
+                  tasks={filteredTasks.filter(t => t.status === (status as any))} 
+                  users={users} 
+                  projects={projects} 
+                  variant={effectiveViewMode}
+                  onTaskClick={t => setSelectedTaskState({ task: t, mode: "view" })} 
+                  onTaskEdit={t => setSelectedTaskState({ task: t, mode: "edit" })} 
+                />
+              ))}
             </div>
-          )}
-        </DragOverlay>
-      </DndContext>
+          </div>
+          <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.5" } } }) }}>
+            {activeTask && (
+              <div className="rotate-2 pointer-events-none drop-shadow-2xl">
+                {effectiveViewMode === ViewMode.KANBAN ? (
+                  <TaskCard task={activeTask} user={users.find(u => u.id === activeTask.assigneeId)} project={projects.find(p => p.id === activeTask.projectId)} isOverlay />
+                ) : (
+                  <TaskListItem task={activeTask} user={users.find(u => u.id === activeTask.assigneeId)} project={projects.find(p => p.id === activeTask.projectId)} isOverlay />
+                )}
+              </div>
+            )}
+          </DragOverlay>
+        </DndContext>
+      )}
 
       {selectedTaskState && (
         <TaskModal task={selectedTaskState.task} initialMode={selectedTaskState.mode} user={users.find(u => u.id === selectedTaskState.task.assigneeId)} users={users} project={projects.find(p => p.id === selectedTaskState.task.projectId)} onClose={() => setSelectedTaskState(null)} onUpdate={updated => setTasks(prev => prev.map(t => t.id === updated.id ? updated : t))} />
       )}
 
       {isCreatingTask && (
-        isMobile ? (
-          <Drawer anchor="bottom" open={true} onClose={() => setIsCreatingTask(false)} slotProps={{ paper: { className: "rounded-t-3xl overflow-hidden" } }}>
-            <CreateTaskForm users={users} projects={projects} initialProjectId={projectId} onClose={() => setIsCreatingTask(false)} onCreate={newTask => setTasks(prev => [...prev, newTask])} isMobile={true} />
-          </Drawer>
-        ) : (
-          <Modal isOpen={true} onClose={() => setIsCreatingTask(false)}>
-            <CreateTaskForm users={users} projects={projects} initialProjectId={projectId} onClose={() => setIsCreatingTask(false)} onCreate={newTask => setTasks(prev => [...prev, newTask])} />
-          </Modal>
-        )
+        <Modal isOpen={true} onClose={() => setIsCreatingTask(false)} noPadding>
+          <CreateTaskForm 
+            users={users} 
+            projects={projects} 
+            initialProjectId={projectId} 
+            onClose={() => setIsCreatingTask(false)} 
+            onCreate={newTask => setTasks(prev => [...prev, newTask])} 
+            onProjectCreated={newP => setProjects(prev => [...prev, newP])}
+            isMobile={isMobile} 
+          />
+        </Modal>
       )}
     </div>
   );
