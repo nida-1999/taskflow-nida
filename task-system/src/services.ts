@@ -20,6 +20,9 @@ export const createProject = (data: Omit<Project, "id">) =>
 export const deleteProject = (id: string) =>
   api.delete(`/projects/${id}`).then((r) => r.data);
 
+export const updateProject = (id: string, data: Partial<Project>) =>
+  api.patch<Project>(`/projects/${id}`, data).then((r) => r.data);
+
 // ── Tasks ──────────────────────────────────────────────
 export const getTasksByProject = async (projectId: string) => {
   const all = await getAllTasks();

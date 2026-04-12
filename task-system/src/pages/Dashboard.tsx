@@ -75,16 +75,16 @@ const Dashboard = () => {
       {/* Bento Grid or Empty State */}
       {tasks.length > 0 ? (
         <div className={isMobile ? "" : "bento-grid"}>
-          {/* Today's Focus */}
-          <div className="card bento-focus" style={{ padding: 32, display: "flex", flexDirection: "column" }}>
-            <div style={{ marginBottom: 24 }}>
-              <span className="column-label" style={{ fontSize: "0.7rem" }}>Today's Focus</span>
-              <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginTop: 8 }}>
+     
+          <div className="card bento-focus !p-8 flex flex-col">
+            <div className="!mb-6">
+              <span className="column-label text-[0.7rem]">Today's Focus</span>
+              <h2 className="text-[1.5rem] font-bold mt-2">
                 {focusProject ? focusProject.name : "No active project"}
               </h2>
             </div>
 
-            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="flex-1 flex flex-col gap-4">
               {focusTasks.length > 0 ? (
                 focusTasks.map(task => (
                   <div key={task.id} style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -92,28 +92,23 @@ const Dashboard = () => {
                       type="checkbox" 
                       checked={task.status === "done"} 
                       readOnly
-                      style={{ 
-                        width: 18, 
-                        height: 18, 
-                        accentColor: "var(--accent)",
-                        cursor: "pointer" 
-                      }} 
+                      className="accent-primary h-[18px] w-[18px] cursor-pointer"                     
                     />
-                    <span style={{ fontSize: "0.95rem", color: task.status === "done" ? "var(--text-secondary)" : "var(--text-primary)", textDecoration: task.status === "done" ? "line-through" : "none" }}>
+                    <span className={`text-[0.95rem] ${task.status === "done" ? "line-through" : ""}`} style={{ color: task.status === "done" ? "var(--text-secondary)" : "var(--text-primary)" }}>
                       {task.title}
                     </span>
                   </div>
                 ))
               ) : (
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>No tasks assigned for this project yet.</p>
+                <p className="text-[0.9rem] text-text-secondary">No tasks assigned for this project yet.</p>
               )}
             </div>
 
             {focusProject && (
-              <div style={{ marginTop: "auto", paddingTop: 32 }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)" }}>Progress</span>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 700 }}>{focusProgress}%</span>
+              <div className="mt-auto !pt-8">
+                <div className="flex justify-between items-center !mb-2">
+                  <span className="text-[0.75rem] font-bold text-text-secondary">Progress</span>
+                  <span className="text-[0.75rem] font-bold">{focusProgress}%</span>
                 </div>
                 <div className="progress-bar-track">
                   <div className="progress-bar-fill" style={{ width: `${focusProgress}%` }} />
@@ -125,17 +120,17 @@ const Dashboard = () => {
           {/* Upcoming Tasks */}
           <div className={`card !p-6 ${isMobile ? "!mt-6" : ""} `}>
             <span className="column-label text-[0.7rem] !mb-4 block">Upcoming</span>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="flex flex-col gap-4">
               {upcomingTasks.length > 0 ? (
                 upcomingTasks.map(task => (
-                  <div key={task.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                  <div key={task.id} className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 min-w-0">
                       <div className="dot dot-amber" />
-                      <span style={{ fontSize: "0.9rem", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span className="text-[0.9rem] font-medium overflow-hidden text-ellipsis whitespace-nowrap">
                         {task.title}
                       </span>
                     </div>
-                    <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--text-secondary)", background: "var(--nav-bg)", padding: "2px 6px", borderRadius: 4 }}>
+                    <span className="text-[0.7rem] font-bold text-text-secondary bg-gray-100 !px-2 !py-1 rounded-md">
                       {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ""}
                     </span>
                   </div>
@@ -145,8 +140,7 @@ const Dashboard = () => {
               )}
             </div>
             <button 
-              className="btn-outline" 
-              style={{ width: "100%", marginTop: 24, padding: "8px" }}
+              className="btn-outline w-[100%] !mt-6 !p-2" 
               onClick={() => navigate("/tasks")}
             >
               View all tasks
@@ -161,10 +155,10 @@ const Dashboard = () => {
           </div>
 
           {/* Recent Projects (Wide Row at bottom) */}
-          <div className="card !p-6" style={{ gridColumn: "span 3"}}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <span className="column-label" style={{ fontSize: "0.7rem" }}>Recent Projects</span>
-              <button className="btn-outline" onClick={() => navigate("/projects")} style={{ padding: "4px 12px", fontSize: "0.75rem" }}>
+          <div className="card !p-4 !md:p-6 overflow-x-scroll" style={{ gridColumn: "span 3"}}>
+            <div className="flex justify-between items-center !mb-4">
+              <span className="column-label text-[0.7rem]">Recent Projects</span>
+              <button className="btn-outline py-1 px-3 text-[0.75rem]" onClick={() => navigate("/projects")}>
                 View All
               </button>
             </div>
@@ -180,7 +174,7 @@ const Dashboard = () => {
                     onClick={() => navigate(`/projects/${project.id}`)}
                   >
                     <h3 style={{ fontSize: "0.95rem", fontWeight: 600, marginBottom: 12 }}>{project.name}</h3>
-                    <div className="progress-bar-track" style={{ height: 4 }}>
+                    <div className="progress-bar-track h-4">
                       <div className="progress-bar-fill" style={{ width: `${pProgress}%` }} />
                     </div>
                   </div>

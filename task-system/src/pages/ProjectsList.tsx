@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { getProjects, createProject, deleteProject, deleteTasksByProject, getAllTasks } from "../services";
+import { getProjects, createProject, deleteProject, deleteTasksByProject, getAllTasks, updateProject } from "../services";
 import Modal from "../components/ui/Modal";
 import type { Project, Task } from "../types";
 import { useMobile } from "../hooks/useMobile";
@@ -20,6 +20,7 @@ const ProjectsList = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
   const isMobile = useMobile()
 
   const load = async () => {
@@ -44,20 +45,35 @@ const ProjectsList = () => {
 
     setCreating(true);
     try {
-      await createProject({
-        name: newProject.name.trim(),
-        description: newProject.description.trim(),
-        createdBy: user?.id || "",
-        createdAt: new Date().toISOString().split("T")[0],
-      });
+      if (projectToEdit) {
+        await updateProject(projectToEdit.id, {
+          name: newProject.name.trim(),
+          description: newProject.description.trim(),
+        });
+      } else {
+        await createProject({
+          name: newProject.name.trim(),
+          description: newProject.description.trim(),
+          createdBy: user?.id || "",
+          createdAt: new Date().toISOString().split("T")[0],
+        });
+      }
       setNewProject({ name: "", description: "" });
       setShowModal(false);
+      setProjectToEdit(null);
       await load();
     } catch (err) {
-      console.error("Failed to create project:", err);
+      console.error("Failed to save project:", err);
     } finally {
       setCreating(false);
     }
+  };
+
+  const handleEdit = (project: Project, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setProjectToEdit(project);
+    setNewProject({ name: project.name, description: project.description || "" });
+    setShowModal(true);
   };
 
   const handleDelete = (project: Project, e: React.MouseEvent) => {
@@ -96,9 +112,8 @@ const ProjectsList = () => {
           <p className="text-[0.9rem] text-secondary">Manage your initiatives and team goals.</p>
         </div>
         <button
-          className="btn-primary"
+          className="btn-primary flex items-center gap-2"   
           onClick={() => setShowModal(true)}
-          style={{ display: "flex", alignItems: "center", gap: 8 }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
             <line x1="12" y1="5" x2="12" y2="19" />
@@ -110,10 +125,10 @@ const ProjectsList = () => {
 
       {/* Project Grid */}
       {projects.length === 0 ? (
-        <div className="card" style={{ padding: 64, textAlign: "center" }}>
-          <div style={{ fontSize: "2.5rem", marginBottom: 16 }}>📂</div>
-          <h3 style={{ fontSize: "1.1rem", fontWeight: 700, marginBottom: 8 }}>No projects yet</h3>
-          <p style={{ color: "var(--text-secondary)", marginBottom: 24, fontSize: "0.9rem" }}>
+        <div className="card !p-16 text-center">
+          <div className="text-[2.5rem] !mb-4">📂</div>
+          <h3 className="text-[1.1rem] font-bold !mb-2">No projects yet</h3>
+          <p className="text-[0.9rem] text-secondary !mb-6">
             Create your first project to start organizing your team's workflow.
           </p>
           <button className="btn-primary" onClick={() => setShowModal(true)}>
@@ -122,11 +137,7 @@ const ProjectsList = () => {
         </div>
       ) : (
         <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
-            gap: 24,
-          }}
+        className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
         >
           {projects.map((project) => {
             const projectTasks = tasks.filter((t) => t.projectId === project.id);
@@ -137,65 +148,34 @@ const ProjectsList = () => {
             return (
               <div
                 key={project.id}
-                className="card animate-fade-in"
-                style={{
-                  padding: 24,
-                  cursor: "pointer",
-                  opacity: isDeleting ? 0.5 : 1,
-                  position: "relative",
-                  display: "flex",
-                  flexDirection: "column"
-                }}
+                className={`card animate-fade-in !p-6 cursor-pointer relative flex flex-col ${isDeleting ? "opacity-50" : ""}`}
                 onClick={() => navigate(`/projects/${project.id}`)}
               >
-                {/* Delete button (only visible on hover via CSS or just subtle) */}
-                <button
-                  onClick={(e) => handleDelete(project, e)}
-                  disabled={isDeleting}
-                  aria-label={`Delete project ${project.name}`}
-                  style={{
-                    position: "absolute",
-                    top: 16,
-                    right: 16,
-                    width: 28,
-                    height: 28,
-                    borderRadius: 6,
-                    background: "transparent",
-                    border: "1px solid var(--border)",
-                    color: "var(--text-secondary)",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.75rem",
-                    transition: "all 0.2s"
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "var(--error)";
-                    e.currentTarget.style.color = "var(--error)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "var(--border)";
-                    e.currentTarget.style.color = "var(--text-secondary)";
-                  }}
-                >
-                  🗑
-                </button>
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button
+                    onClick={(e) => handleEdit(project, e)}
+                    disabled={isDeleting}
+                    aria-label={`Edit project ${project.name}`}
+                    className="w-[28px] h-[28px] rounded-lg bg-transparent border border-border text-text-secondary cursor-pointer flex items-center justify-center text-xs transition-all duration-200 hover:border-primary hover:text-primary"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={(e) => handleDelete(project, e)}
+                    disabled={isDeleting}
+                    aria-label={`Delete project ${project.name}`}
+                    className="w-[28px] h-[28px] rounded-lg bg-transparent border border-border text-text-secondary cursor-pointer flex items-center justify-center text-xs transition-all duration-200 hover:border-red-500 hover:text-red-500"
+                  >
+                    🗑
+                  </button>
+                </div>
 
-                <div style={{ marginBottom: 20 }}>
-                  <h3 style={{ fontSize: "1.05rem", fontWeight: 700, marginBottom: 8, paddingRight: 32 }}>
+                <div className="!mb-4">
+                  <h3 className="text-[1.05rem] font-bold !mb-2" style={{ paddingRight: 32 }}>
                     {project.name}
                   </h3>
                   <p
-                    style={{
-                      color: "var(--text-secondary)",
-                      fontSize: "0.85rem",
-                      lineHeight: 1.5,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
+                  className="text-secondary text-[0.85rem] leading-1.5"
                   >
                     {project.description || "No description provided."}
                   </p>
@@ -206,10 +186,10 @@ const ProjectsList = () => {
                     <span>{projectTasks.length} tasks</span>
                     <span>{progress}%</span>
                   </div>
-                  <div className="progress-bar-track" style={{ height: 4 }}>
+                  <div className="progress-bar-track h-4">
                     <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
                   </div>
-                  <div style={{ marginTop: 16, fontSize: "0.7rem", color: "var(--text-secondary)" }}>
+                  <div className="text-secondary text-[0.7rem] !mt-4">
                     Created on {new Date(project.createdAt).toLocaleDateString()}
                   </div>
                 </div>
@@ -219,11 +199,17 @@ const ProjectsList = () => {
         </div>
       )}
 
-      {/* Create Modal */}
+      {/* Create/Edit Modal */}
       {showModal && createPortal(
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="modal-overlay" onClick={() => {
+          setShowModal(false);
+          setProjectToEdit(null);
+          setNewProject({ name: "", description: "" });
+        }}>
           <div className="card" style={{ width: "90%", maxWidth: 450, padding: 32 }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: 24 }}>New Project</h2>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: 24 }}>
+              {projectToEdit ? "Edit Project" : "New Project"}
+            </h2>
 
             <form onSubmit={handleCreate} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -255,11 +241,15 @@ const ProjectsList = () => {
               </div>
 
               <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 12 }}>
-                <button type="button" className="btn-outline" onClick={() => setShowModal(false)}>
+                <button type="button" className="btn-outline" onClick={() => {
+                  setShowModal(false);
+                  setProjectToEdit(null);
+                  setNewProject({ name: "", description: "" });
+                }}>
                   Cancel
                 </button>
                 <button type="submit" className="btn-primary" disabled={creating || !newProject.name.trim()}>
-                  {creating ? "Creating..." : "Create Project"}
+                  {creating ? (projectToEdit ? "Saving..." : "Creating...") : (projectToEdit ? "Save Changes" : "Create Project")}
                 </button>
               </div>
             </form>

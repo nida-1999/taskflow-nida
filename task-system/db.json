@@ -1,12 +1,62 @@
 {
-  "users": [{
+  "users": [
+    {
       "id": "1",
       "name": "Alice",
       "email": "alice@gmail.com",
       "password": "pass123@",
       "avatar": "A"
-    }],
-  "projects": [],
-  "tasks": [],
+    },
+    {
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "Password123!",
+      "avatar": "T",
+      "id": "WlxH34zxO9Y"
+    },
+    {
+      "name": "Alice",
+      "email": "alice@taskflow.io",
+      "password": "123456!",
+      "avatar": "A",
+      "id": "wcxcCg1G6OQ"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Updated Project Name",
+      "description": "Updated Description",
+      "createdBy": "VQTcyg5zrqs",
+      "createdAt": "2026-04-12",
+      "id": "QRoKf67HiyM"
+    },
+    {
+      "name": "sasamdowjdoiwjd",
+      "description": "dmwklj",
+      "createdBy": "VQTcyg5zrqs",
+      "createdAt": "2026-04-12",
+      "id": "cSefT8WNSGU"
+    },
+    {
+      "name": "mdkdkj",
+      "description": "mflkw3",
+      "createdBy": "VQTcyg5zrqs",
+      "createdAt": "2026-04-12",
+      "id": "Otr9UH_-bwY"
+    }
+  ],
+  "tasks": [
+    {
+      "title": "sasa",
+      "description": "s",
+      "status": "done",
+      "priority": "low",
+      "projectId": "QRoKf67HiyM",
+      "assigneeId": "WlxH34zxO9Y",
+      "dueDate": "",
+      "createdAt": "2026-04-12T16:41:59.968Z",
+      "id": "DyYyMhxBe4I"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

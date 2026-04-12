@@ -6,6 +6,7 @@ import "./index.css";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 import Layout from "./components/Layout";
 import LoginScreen from "./components/LoginScreen";
 import Dashboard from "./pages/Dashboard";
@@ -17,12 +18,11 @@ createRoot(document.getElementById("root")!).render(
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-        <Routes>
-          {/* Public */}
+        <Routes>      
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<LoginScreen />} />
+          </Route>
           
-          <Route path="/login" element={<LoginScreen />} />
-
-
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/dashboard" element={<Dashboard />} />
@@ -31,7 +31,6 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/projects/:projectId" element={<TasksPage />} />
             </Route>
           </Route>
-
   
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
