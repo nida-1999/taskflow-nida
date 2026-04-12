@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   DndContext,
   DragOverlay,
-  rectIntersection,
+  closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -11,7 +11,7 @@ import {
   defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import type { DragStartEvent, DragOverEvent, DragEndEvent } from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { sortableKeyboardCoordinates, arrayMove } from "@dnd-kit/sortable";
 import Drawer from "@mui/material/Drawer";
 
 import { getAllTasks, getUsers, getProjects, updateTask } from "../services";
@@ -22,7 +22,7 @@ import { useMobile } from "../hooks/useMobile";
 import Button from "../components/ui/Button";
 import MultiSelect from "../components/ui/MultiSelect";
 import { Heading, Text } from "../components/ui/Typography";
-import Select from "../components/ui/Select";
+import SingleSelect from "../components/ui/SingleSelect";
 import Badge from "../components/ui/Badge";
 import Avatar from "../components/ui/Avatar";
 import Modal from "../components/ui/Modal";
@@ -111,21 +111,41 @@ const TasksPage: React.FC = () => {
   const project = projectId ? projects.find(p => p.id === projectId) : null;
 
   const handleDragStart = (event: DragStartEvent) => {
-    const task = tasks.find((t) => t.id === event.active.id);
+    const activeId = String(event.active.id);
+    const task = tasks.find((t) => String(t.id) === activeId);
     if (task) setActiveTask(task);
   };
 
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
-    const activeId = active.id as string;
-    const overId = over.id as string;
-    const activeTask = tasks.find((t) => t.id === activeId);
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    if (activeId === overId) return;
+
+    const activeTask = tasks.find((t) => String(t.id) === activeId);
     if (!activeTask) return;
 
-    const overStatus = ["todo", "in-progress", "review", "done"].includes(overId) ? (overId as any) : tasks.find(t => t.id === overId)?.status;
-    if (overStatus && activeTask.status !== overStatus) {
-      setTasks(prev => prev.map(t => t.id === activeId ? { ...t, status: overStatus } : t));
+    const overStatus = overId.startsWith("col-") 
+      ? (overId.replace("col-", "") as any) 
+      : tasks.find(t => String(t.id) === overId)?.status;
+
+    if (!overStatus) return;
+
+    if (activeTask.status !== overStatus) {
+      setTasks((prev) => {
+        const activeIndex = prev.findIndex((t) => String(t.id) === activeId);
+        const overIndex = prev.findIndex((t) => String(t.id) === overId);
+        if (activeIndex === -1) return prev;
+
+        const newTasks = [...prev];
+        newTasks[activeIndex] = { ...newTasks[activeIndex], status: overStatus };
+
+        if (overIndex >= 0) {
+          return arrayMove(newTasks, activeIndex, overIndex);
+        }
+        return arrayMove(newTasks, activeIndex, newTasks.length - 1);
+      });
     }
   };
 
@@ -133,9 +153,26 @@ const TasksPage: React.FC = () => {
     setActiveTask(null);
     const { active, over } = event;
     if (!over) return;
-    const movedTask = tasks.find((t) => t.id === active.id);
+    
+    const activeId = String(active.id);
+    const overId = String(over.id);
+
+    let nextTasks = [...tasks];
+
+    if (activeId !== overId) {
+      const activeIndex = nextTasks.findIndex((t) => String(t.id) === activeId);
+      const overIndex = nextTasks.findIndex((t) => String(t.id) === overId);
+      
+      if (activeIndex !== -1 && overIndex !== -1 && nextTasks[activeIndex].status === nextTasks[overIndex].status) {
+        nextTasks = arrayMove(nextTasks, activeIndex, overIndex);
+        setTasks(nextTasks);
+      }
+    }
+
+    const movedTask = nextTasks.find((t) => String(t.id) === activeId);
     if (movedTask) {
-      try { await updateTask(movedTask.id, movedTask); } catch (e) { console.error("Sync failed", e); }
+      // Fire and forget update
+      updateTask(movedTask.id, movedTask).catch(e => console.error("Sync failed", e));
     }
   };
 
@@ -147,7 +184,7 @@ const TasksPage: React.FC = () => {
   );
 
   if (projectId && !project) return (
-    <div className="text-center pt-20">
+    <div className="text-center !pt-20">
       <div className="text-5xl mb-4">😕</div>
       <Heading variant="h2" className="mb-4">Project Not Found</Heading>
       <Button onClick={() => navigate("/projects")}>Back to Projects</Button>
@@ -173,9 +210,9 @@ const TasksPage: React.FC = () => {
             Create Task
           </Button>
           {!isMobile && (
-            <div className="flex bg-slate-100 p-1 rounded-xl">
-              <button className={`!px-4 !py-1.5 rounded-lg text-sm font-bold transition-all ${viewMode === "kanban" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`} onClick={() => setViewMode("kanban")}>Kanban</button>
-              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold transition-all ${viewMode === "list" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`} onClick={() => setViewMode("list")}>List</button>
+            <div className="flex bg-slate-100 !p-1 rounded-xl">
+              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "kanban" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`} onClick={() => setViewMode("kanban")}>Kanban</button>
+              <button className={`!px-4 !py-[6px] rounded-lg text-sm font-bold !cursor-pointer transition-all ${viewMode === "list" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500"}`} onClick={() => setViewMode("list")}>List</button>
             </div>
           )}
         </div>
@@ -193,12 +230,17 @@ const TasksPage: React.FC = () => {
         <MultiSelect label="Status" placeholder="Filter status" options={[{ value: "todo", label: "To Do" }, { value: "in-progress", label: "In Progress" }, { value: "review", label: "Review" }, { value: "done", label: "Done" }]} selected={filters.statuses} onChange={(vals) => setFilters(f => ({ ...f, statuses: vals }))} />
         <MultiSelect label="Assignee" placeholder="Filter assignee" options={users.map(u => ({ value: u.id, label: u.name }))} selected={filters.assignees} onChange={(vals) => setFilters(f => ({ ...f, assignees: vals }))} />
         {!isMobile && <div className="w-px h-10 bg-slate-200 self-end mb-0.5" />}
-        <Select label="Sort by" value={sortBy} onChange={(e) => setSortBy(e.target.value as any)}>
-          <option value="manual">Manual</option>
-          <option value="createdAt">Newest first</option>
-          <option value="dueDate">Due date</option>
-          <option value="priority">Priority</option>
-        </Select>
+        <SingleSelect
+          label="Sort by"
+          value={sortBy}
+          onChange={(val) => setSortBy(val as any)}
+          options={[
+            { value: "manual", label: "Manual" },
+            { value: "createdAt", label: "Newest first" },
+            { value: "dueDate", label: "Due date" },
+            { value: "priority", label: "Priority" },
+          ]}
+        />
         <Button variant="ghost" className={`h-9 !px-4 text-[0.82rem] font-bold self-end ${hasActiveFilters ? "text-red-500" : "text-slate-300 pointer-events-none"}`} onClick={() => setFilters({ statuses: [], assignees: [], search: "" })}>✕ Clear Filters</Button>
       </div>
 
@@ -212,8 +254,8 @@ const TasksPage: React.FC = () => {
       )}
 
       {viewMode === "kanban" ? (
-        <DndContext sensors={sensors} collisionDetection={rectIntersection} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto pb-6 custom-scrollbar">
+        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-x-auto !pb-6 custom-scrollbar">
             {["todo", "in-progress", "review", "done"].map(status => (
               <KanbanColumn key={status} id={status as any} title={status.replace('-', ' ')} tasks={filteredTasks.filter(t => t.status === (status as any))} users={users} projects={projects} onTaskClick={t => setSelectedTaskState({ task: t, mode: "view" })} onTaskEdit={t => setSelectedTaskState({ task: t, mode: "edit" })} />
             ))}
@@ -227,7 +269,7 @@ const TasksPage: React.FC = () => {
           <table className="w-full border-collapse min-w-[800px]">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-100">
-                {["Task", "Project", "Assignee", "Status", "Priority", "Due Date", "Actions"].map(h => <th key={h} className="text-left px-6 py-4 text-[0.7rem] font-bold text-slate-400 uppercase tracking-wider">{h}</th>)}
+                {["Task", "Project", "Assignee", "Status", "Priority", "Due Date", "Actions"].map(h => <th key={h} className="text-left !px-6 !py-4 text-[0.7rem] font-bold text-slate-400 uppercase tracking-wider">{h}</th>)}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

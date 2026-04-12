@@ -7,6 +7,7 @@ import Input from "./ui/Input";
 import Badge from "./ui/Badge";
 import Avatar from "./ui/Avatar";
 import { Text } from "./ui/Typography";
+import SingleSelect from "./ui/SingleSelect";
 
 interface TaskModalProps {
   task: Task;
@@ -103,17 +104,12 @@ const TaskModal: React.FC<TaskModalProps> = ({
         <div className="grid grid-cols-2 !gap-x-6 !gap-y-5">
           <PropertyItem label="Assignee">
             {isEditing ? (
-              <select
-                className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-[6px] text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
-                value={editedTask.assigneeId}
-                onChange={(e) => setEditedTask((prev) => ({ ...prev, assigneeId: e.target.value }))}
-              >
-                {users.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+              <SingleSelect
+                className="w-full h-[36px]"
+                value={editedTask.assigneeId as string}
+                onChange={(val) => setEditedTask((prev) => ({ ...prev, assigneeId: val }))}
+                options={users.map((u) => ({ value: u.id, label: u.name }))}
+              />
             ) : (
               <div className="flex items-center gap-2.5">
                 <Avatar name={user?.name} avatar={user?.avatar} size="sm" />
@@ -124,15 +120,16 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
           <PropertyItem label="Priority">
             {isEditing ? (
-              <select
-                className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-[6px] text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
-                value={editedTask.priority}
-                onChange={(e) => setEditedTask((prev) => ({ ...prev, priority: e.target.value as TaskPriority }))}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+              <SingleSelect
+                className="w-full h-[36px]"
+                value={editedTask.priority as string}
+                onChange={(val) => setEditedTask((prev) => ({ ...prev, priority: val as TaskPriority }))}
+                options={[
+                  { value: "low", label: "Low" },
+                  { value: "medium", label: "Medium" },
+                  { value: "high", label: "High" },
+                ]}
+              />
             ) : (
               <Badge variant={task.priority}>
                 {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
@@ -142,16 +139,17 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
           <PropertyItem label="Status">
             {isEditing ? (
-              <select
-                className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-[6px] text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
-                value={editedTask.status}
-                onChange={(e) => setEditedTask((prev) => ({ ...prev, status: e.target.value as TaskStatus }))}
-              >
-                <option value="todo">To Do</option>
-                <option value="in-progress">In Progress</option>
-                <option value="review">Review</option>
-                <option value="done">Done</option>
-              </select>
+              <SingleSelect
+                className="w-full h-[36px]"
+                value={editedTask.status as string}
+                onChange={(val) => setEditedTask((prev) => ({ ...prev, status: val as TaskStatus }))}
+                options={[
+                  { value: "todo", label: "To Do" },
+                  { value: "in-progress", label: "In Progress" },
+                  { value: "review", label: "Review" },
+                  { value: "done", label: "Done" },
+                ]}
+              />
             ) : (
               <div className="bg-slate-50 border border-slate-100 !px-[10px] !py-[2px] rounded text-[0.8rem] font-bold text-slate-600 capitalize">
                 {task.status.replace("-", " ")}
@@ -178,7 +176,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
           <Text variant="tiny">Description</Text>
           {isEditing ? (
             <textarea
-              className="w-full min-h-[120px] bg-slate-50 border border-slate-200 rounded-xl !p-[14px] text-[0.95rem] leading-relaxed outline-none focus:border-indigo-600 transition-all placeholder:text-slate-400"
+              className="w-full min-h-[80px] bg-slate-50 border border-slate-200 rounded-xl !p-[14px] text-[0.95rem] leading-relaxed outline-none focus:border-indigo-600 transition-all placeholder:text-slate-400"
               value={editedTask.description}
               placeholder="Description..."
               onChange={(e) => setEditedTask((prev) => ({ ...prev, description: e.target.value }))}

@@ -10,7 +10,6 @@ import LoginScreen from "./components/LoginScreen";
 import Dashboard from "./pages/Dashboard";
 import ProjectsList from "./pages/ProjectsList";
 import TasksPage from "./pages/TasksPage";
-import ProjectDetail from "./pages/ProjectDetail";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -27,7 +26,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/tasks" element={<TasksPage />} />
               <Route path="/projects" element={<ProjectsList />} />
-              <Route path="/projects/:id" element={<ProjectDetail />} />
+              <Route path="/projects/:projectId" element={<TasksPage />} />
             </Route>
           </Route>
 

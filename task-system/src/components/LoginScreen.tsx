@@ -148,7 +148,7 @@ const LoginScreen = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-slate-400 text-[0.7rem] font-bold cursor-pointer hover:text-slate-600 px-2 py-1 rounded"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-slate-400 text-[0.7rem] font-bold cursor-pointer hover:text-slate-600 !px-2 !py-1 rounded"
               >
                 {showPassword ? "HIDE" : "SHOW"}
               </button>

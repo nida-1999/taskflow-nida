@@ -4,6 +4,7 @@ import { createTask } from "../services";
 import Button from "./ui/Button";
 import Input from "./ui/Input";
 import { Heading, Text } from "./ui/Typography";
+import SingleSelect from "./ui/SingleSelect";
 
 interface CreateTaskFormProps {
   users: User[];
@@ -55,7 +56,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
       <Text variant="tiny" className={isMobile ? "text-[0.6rem]" : ""}>
         {label}
       </Text>
-      <div className={`${isMobile ? "min-h-[20px]" : "min-h-[24px]"} flex items-center`}>
+      <div className={`${isMobile ? "!min-h-[20px]" : "!min-h-[24px]"} flex items-center`}>
         {children}
       </div>
     </div>
@@ -64,8 +65,8 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
   return (
     <div className="flex flex-col bg-white w-full h-full">
       {/* Header */}
-      <div className={`flex items-center justify-between border-b border-slate-100 ${isMobile ? "!p-4" : "!px-[28px] !py-6"}`}>
-        <Heading variant={isMobile ? "h3" : "h2"} className="tracking-tight">
+      <div className={`flex items-center justify-between border-b border-slate-100 ${isMobile ? "!p-4" : "!px-[24px] !py-2"}`}>
+        <Heading variant={isMobile ? "h3" : "h2"} className="">
           Create a Task
         </Heading>
         <button
@@ -79,7 +80,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
       </div>
 
       {/* Content */}
-      <div className={`flex-1 overflow-y-auto flex flex-col ${isMobile ? "p-5 gap-5" : "!px-[28px] !py-6 gap-7"}`}>
+      <div className={`flex-1 overflow-y-auto flex flex-col ${isMobile ? "p-5 gap-5" : "!px-[28px] !py-6 gap-4"}`}>
         <Input
           label="Title"
           placeholder="What needs to be done?"
@@ -91,56 +92,48 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
 
         <div className={`grid grid-cols-2 ${isMobile ? "gap-4" : "gap-x-7 gap-y-6"}`}>
           <PropertyItem label="Project">
-            <select
-              className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-2 text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
-              value={task.projectId}
-              onChange={(e) => setTask((prev) => ({ ...prev, projectId: e.target.value }))}
-            >
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
+            <SingleSelect
+              className="w-full h-[36px]"
+              value={task.projectId as string}
+              onChange={(val) => setTask((prev) => ({ ...prev, projectId: val }))}
+              options={projects.map((p) => ({ value: p.id, label: p.name }))}
+            />
           </PropertyItem>
 
           <PropertyItem label="Assignee">
-            <select
-              className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-2 text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
-              value={task.assigneeId}
-              onChange={(e) => setTask((prev) => ({ ...prev, assigneeId: e.target.value }))}
-            >
-              {users.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.name}
-                </option>
-              ))}
-            </select>
+            <SingleSelect
+              className="w-full h-[36px]"
+              value={task.assigneeId as string}
+              onChange={(val) => setTask((prev) => ({ ...prev, assigneeId: val }))}
+              options={users.map((u) => ({ value: u.id, label: u.name }))}
+            />
           </PropertyItem>
 
           <PropertyItem label="Status">
-            <select
-              className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-2 text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
-              value={task.status}
-              onChange={(e) => setTask((prev) => ({ ...prev, status: e.target.value as TaskStatus }))}
-            >
-              <option value="todo">To Do</option>
-              <option value="in-progress">In Progress</option>
-              <option value="review">Review</option>
-              <option value="done">Done</option>
-            </select>
+            <SingleSelect
+              className="w-full h-[36px]"
+              value={task.status as string}
+              onChange={(val) => setTask((prev) => ({ ...prev, status: val as TaskStatus }))}
+              options={[
+                { value: "todo", label: "To Do" },
+                { value: "in-progress", label: "In Progress" },
+                { value: "review", label: "Review" },
+                { value: "done", label: "Done" },
+              ]}
+            />
           </PropertyItem>
 
           <PropertyItem label="Priority">
-            <select
-              className="w-full bg-white border border-slate-200 rounded-lg !px-3 !py-2 text-[0.85rem] outline-none focus:border-indigo-600 transition-all font-medium"
-              value={task.priority}
-              onChange={(e) => setTask((prev) => ({ ...prev, priority: e.target.value as TaskPriority }))}
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
+            <SingleSelect
+              className="w-full h-[36px]"
+              value={task.priority as string}
+              onChange={(val) => setTask((prev) => ({ ...prev, priority: val as TaskPriority }))}
+              options={[
+                { value: "low", label: "Low" },
+                { value: "medium", label: "Medium" },
+                { value: "high", label: "High" },
+              ]}
+            />
           </PropertyItem>
 
           <PropertyItem label="Due Date">
@@ -156,7 +149,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
         <div className="flex flex-col gap-2 !pt-5 border-t border-slate-100">
           <Text variant="tiny">Description</Text>
           <textarea
-            className="w-full min-h-[100px] bg-slate-50 border border-slate-200 rounded-xl !p-[14px] text-[0.9rem] leading-relaxed outline-none focus:border-indigo-600 transition-all placeholder:text-slate-400"
+            className="w-full min-h-[50px] bg-slate-50 border border-slate-200 rounded-xl !p-[14px] text-[0.9rem] leading-relaxed outline-none focus:border-indigo-600 transition-all placeholder:text-slate-400"
             value={task.description}
             placeholder="More details about this task..."
             onChange={(e) => setTask((prev) => ({ ...prev, description: e.target.value }))}
@@ -165,7 +158,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
       </div>
 
       {/* Footer */}
-      <div className={`border-t border-slate-100 flex gap-3 bg-slate-50/50 ${isMobile ? "!p-4" : "!px-[28px] !py-5"}`}>
+      <div className={`border-t border-slate-100 flex gap-3 sticky bottom-0 bg-white z-1 bg-slate-50/50 ${isMobile ? "!p-4" : "!px-[28px] !pt-4"}`}>
         <Button
           className="flex-[1.5]"
           onClick={handleSave}

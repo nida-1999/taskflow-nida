@@ -79,7 +79,7 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-[calc(100%+6px)] left-0 w-full min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl z-50 p-1.5 animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute top-[calc(100%+6px)] left-0 w-full min-w-[200px] bg-white border border-slate-200 rounded-xl shadow-xl z-50 !p-[6px] animate-in fade-in zoom-in-95 duration-150">
           <div className="max-h-[280px] overflow-y-auto custom-scrollbar">
             {options.map((opt) => {
               const checked = selected.includes(opt.value);
@@ -87,18 +87,24 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                 <button
                   key={opt.value}
                   onClick={() => toggle(opt.value)}
-                  className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-semibold flex items-center justify-between transition-colors mb-0.5 last:mb-0 ${
+                  className={`w-full text-left !px-3 !py-2 rounded-lg text-[0.85rem] font-semibold flex items-center justify-start gap-2.5 transition-colors mb-0.5 last:mb-0 ${
                     checked 
-                      ? "bg-indigo-50 text-indigo-700" 
+                      ? "bg-indigo-50/70 text-indigo-700" 
                       : "text-slate-600 hover:bg-slate-50"
                   }`}
                 >
-                  <span className="truncate">{opt.label}</span>
-                  {checked && (
-                    <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
+                  <div className={`flex-shrink-0 w-[18px] h-[18px] rounded-[5px] border flex items-center justify-center transition-all ${
+                    checked 
+                      ? "bg-indigo-600 border-indigo-600 shadow-sm" 
+                      : "bg-white border-slate-300"
+                  }`}>
+                    {checked && (
+                      <svg className="w-[12px] h-[12px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.5" d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className="truncate !pt-[1px]">{opt.label}</span>
                 </button>
               );
             })}
