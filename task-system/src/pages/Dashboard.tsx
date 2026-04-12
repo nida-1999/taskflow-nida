@@ -8,6 +8,7 @@ import Button from "../components/ui/Button";
 import { Heading, Text } from "../components/ui/Typography";
 import Modal from "../components/ui/Modal";
 import CreateTaskForm from "../components/CreateTaskForm";
+import DashboardSkeleton from "../components/DashboardSkeleton";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -36,11 +37,7 @@ const Dashboard = () => {
   }, []);
 
   if (loading) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
-        <div className="spinner" style={{ borderTopColor: "var(--accent)" }} />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   // Logic for Bento Cards

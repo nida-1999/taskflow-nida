@@ -6,6 +6,7 @@ import { getProjects, createProject, deleteProject, deleteTasksByProject, getAll
 import Modal from "../components/ui/Modal";
 import type { Project, Task } from "../types";
 import { useMobile } from "../hooks/useMobile";
+import ProjectsSkeleton from "../components/ProjectsSkeleton";
 
 const ProjectsList = () => {
   const { user } = useAuth();
@@ -83,11 +84,7 @@ const ProjectsList = () => {
   };
 
   if (loading) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "60vh" }}>
-        <div className="spinner" style={{ borderTopColor: "var(--accent)" }} />
-      </div>
-    );
+    return <ProjectsSkeleton />;
   }
 
   return (

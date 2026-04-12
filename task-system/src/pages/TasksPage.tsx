@@ -31,6 +31,7 @@ import KanbanColumn from "../components/KanbanColumn";
 import TaskListItem from "../components/TaskListItem";
 import TaskModal from "../components/TaskModal";
 import CreateTaskForm from "../components/CreateTaskForm";
+import TasksSkeleton from "../components/TasksSkeleton";
 
 const FilterPill: React.FC<{ label: string; value: string; onRemove: () => void }> = ({ label, value, onRemove }) => (
   <div className="flex items-center gap-1.5 bg-[var(--accent-light)] text-[var(--accent)] !px-[10px] !py-1 rounded-lg border border-[var(--accent)] animate-in zoom-in-95 duration-200">
@@ -227,12 +228,7 @@ const TasksPage: React.FC = () => {
     }
   };
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center !p-24 gap-4 min-h-[400px]">
-      <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
-      <Text className="text-slate-500 font-semibold italic">Loading workspace...</Text>
-    </div>
-  );
+  if (loading) return <TasksSkeleton />;
 
   if (projectId && !project) return (
     <div className="text-center !pt-20">

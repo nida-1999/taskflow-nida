@@ -188,6 +188,13 @@
       "password": "asd231@",
       "avatar": "N",
       "id": "zP6kqf6pzSA"
+    },
+    {
+      "name": "Refactored User1",
+      "email": "alice111@taskflow.io",
+      "password": "qetw2q@",
+      "avatar": "R",
+      "id": "VQTcyg5zrqs"
     }
   ],
   "projects": [
@@ -217,7 +224,7 @@
     {
       "title": "sasa",
       "description": "sa",
-      "status": "review",
+      "status": "in-progress",
       "priority": "medium",
       "projectId": "-1Pd9zc2gRo",
       "assigneeId": "2",
@@ -261,7 +268,7 @@
     {
       "title": "jhgf",
       "description": "ertyu",
-      "status": "todo",
+      "status": "review",
       "priority": "high",
       "projectId": "hhMvzAXaw-s",
       "assigneeId": "2",
@@ -272,7 +279,7 @@
     {
       "title": "kjhg",
       "description": "m",
-      "status": "todo",
+      "status": "in-progress",
       "priority": "medium",
       "projectId": "-1Pd9zc2gRo",
       "assigneeId": "jMNPrY1hQTk",
