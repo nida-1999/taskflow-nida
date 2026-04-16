@@ -3,7 +3,7 @@ import * as jose from "jose";
 import type { AuthContextType, User } from "../types";
 import api from "../api";
 
-const JWT_SECRET = import.meta.env.VITE_JWT_SECRET ?? "task_system_secret_key_2024"
+const JWT_SECRET = import.meta.env.VITE_JWT_SECRET
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
