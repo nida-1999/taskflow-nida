@@ -20,14 +20,11 @@ RUN npm run build
 FROM nginx:stable-alpine as production-stage
  
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 
 # Copy built assets from build-stage to nginx public folder
 COPY --from=build-stage /app/dist /usr/share/nginx/html
  
-# Expose port 80
-EXPOSE 80
- 
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/bin/sh", "-c", "envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
  
